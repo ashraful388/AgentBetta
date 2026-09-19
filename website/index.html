@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AgentBetta — Adaptive AI Nano-Agent</title>
+  <meta name="description" content="AgentBetta is an adaptive AI nano-agent for efficient, verified task completion. Windows and macOS." />
+  <link rel="icon" href="assets/agentbetta.ico" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top">
+        <img src="assets/agentbetta.png" alt="AgentBetta" />
+        <span>AgentBetta<sup>™</sup></span>
+      </a>
+      <nav class="links">
+        <a href="#features">Features</a>
+        <a href="#download">Download</a>
+        <a href="#docs">Docs</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn" href="https://github.com/ashraful388/AgentBetta">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <img class="hero-logo" src="assets/agentbetta.png" alt="AgentBetta logo" />
+      <h1>AgentBetta</h1>
+      <p class="tagline">An adaptive AI nano-agent for efficient, verified task completion.</p>
+      <p class="sub">
+        AgentBetta configures its model, context, tools, permissions, memory and
+        budgets for each task, runs it, <strong>verifies</strong> the result, and
+        adjusts only what was insufficient. It never silently escalates permissions.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#download">Download for Windows</a>
+        <a class="btn" href="docs/macos/installation.html">Build for macOS</a>
+      </div>
+    </section>
+
+    <section id="features" class="wrap">
+      <h2>Features</h2>
+      <div class="grid">
+        <article><h3>Adaptive configuration</h3><p>An explicit configuration vector X = ⟨M, C, T, P, Mem, R, τ, I⟩ is tuned per task and recorded.</p></article>
+        <article><h3>Verified outcomes</h3><p>A runtime validator — not the model's own claim — decides success.</p></article>
+        <article><h3>Local &amp; cloud models</h3><p>Ollama locally, or any OpenAI-compatible endpoint. Automatic fallback keeps tasks running.</p></article>
+        <article><h3>Governed permissions</h3><p>Profiles, approvals, and hard-denied actions that the agent can never grant itself.</p></article>
+        <article><h3>PC &amp; browser access</h3><p>Files, shell and real-time web — permission-controlled and audited.</p></article>
+        <article><h3>Chats, projects, memory</h3><p>Conversations and durable memory, stored locally and governed.</p></article>
+      </div>
+    </section>
+
+    <section id="download" class="wrap">
+      <h2>Download</h2>
+      <div class="grid two">
+        <article>
+          <h3>Windows 10/11 (x64)</h3>
+          <p>Per-user installer — no Python, no admin required.</p>
+          <a class="btn primary" href="https://github.com/ashraful388/AgentBetta/releases/latest">Download Setup EXE</a>
+          <p class="muted">Portable ZIP also available on the releases page.</p>
+        </article>
+        <article>
+          <h3>macOS 11+ (Intel / Apple silicon)</h3>
+          <p>Build the .app/.dmg on a Mac, or use the CI build.</p>
+          <a class="btn" href="docs/macos/building.html">Build instructions</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="docs" class="wrap">
+      <h2>Documentation</h2>
+      <ul class="doclinks">
+        <li><a href="docs/getting-started.html">Getting started</a></li>
+        <li><a href="docs/user-guide.html">User guide</a></li>
+        <li><a href="docs/providers-and-models.html">Providers &amp; models</a></li>
+        <li><a href="docs/permissions.html">Permissions &amp; approvals</a></li>
+        <li><a href="docs/browser-and-web.html">Browser &amp; web</a></li>
+        <li><a href="docs/architecture.html">Architecture</a></li>
+        <li><a href="docs/troubleshooting.html">Troubleshooting</a></li>
+        <li><a href="docs/license.html">License</a></li>
+      </ul>
+    </section>
+
+    <section id="faq" class="wrap">
+      <h2>FAQ</h2>
+      <details><summary>Do I need Python or an API key?</summary><p>No. On Windows install with the Setup EXE; AgentBetta runs fully offline with a local Ollama model. Cloud providers are optional.</p></details>
+      <details><summary>Where are my API keys stored?</summary><p>In Windows Credential Manager or the macOS Keychain — never in files or logs.</p></details>
+      <details><summary>Can the agent grant itself more permissions?</summary><p>No. It may only activate permissions from a pre-approved eligible set; hard-denied actions can never be granted.</p></details>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <p>AgentBetta™ — MIT © 2026 Dr. Md. Ashraful Babu.</p>
+  </footer>
+</body>
+</html>

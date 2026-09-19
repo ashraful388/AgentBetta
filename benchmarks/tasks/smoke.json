@@ -1,0 +1,5 @@
+[
+  {"id":"reasoning-1","task":"Explain why verified success is stronger than self-reported success."},
+  {"id":"calc-1","task":"Calculate 17 * 23."},
+  {"id":"files-1","task":"List the files in the approved workspace.","workspace":"."}
+]

@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: AgentBetta
+message: "If you use AgentBetta in academic work, please cite it using this metadata."
+type: software
+version: 0.2.0-alpha.1
+license: MIT
+repository-code: ""
+authors:
+  - name: "Dr. Md. Ashraful Babu"
+    affiliation: "Department of Physical Sciences, Independent University, Bangladesh"
+    city: Dhaka
+    country: BD

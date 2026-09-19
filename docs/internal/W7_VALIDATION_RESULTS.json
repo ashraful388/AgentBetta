@@ -1,0 +1,60 @@
+[
+  {
+    "test": "A_local_ollama",
+    "status": "PASS",
+    "detail": "verified=True file=True attempts=1 seconds=9.3",
+    "tools": [
+      "read_text_file",
+      "write_text_file"
+    ],
+    "output": "The file summary.md has been created and contains the sentence: \"Note1.txt contains information about the first note.\" The file is located at the path: summary.md and has a total of 52 characters."
+  },
+  {
+    "test": "B_cloud_adapter",
+    "status": "PASS",
+    "detail": "verified=True seconds=32.4",
+    "tools": [
+      "calculator"
+    ],
+    "output": "The result of 17 multiplied by 23 is **391**."
+  },
+  {
+    "test": "C_realtime_web",
+    "status": "PASS",
+    "detail": "verified=True web_tool_used=True seconds=5.3",
+    "tools": [
+      "http_fetch"
+    ],
+    "output": "The web page at https://example.com contains the text \"Example Domain\" and provides information about using the domain in documentation examples without requiring permission."
+  },
+  {
+    "test": "D_local_computer",
+    "status": "PASS",
+    "detail": "verified=True file=True seconds=10.3",
+    "tools": [
+      "create_directory",
+      "write_text_file_global"
+    ]
+  },
+  {
+    "test": "E_permission_escalation",
+    "status": "PASS",
+    "detail": "file_delete_activated=True file_deleted=True",
+    "adaptations": [
+      [
+        "tools",
+        "permissions"
+      ]
+    ]
+  },
+  {
+    "test": "F_hard_denied",
+    "status": "PASS",
+    "detail": "file_still_exists=True"
+  },
+  {
+    "test": "G_cancellation",
+    "status": "PASS",
+    "detail": "cancelled=True"
+  }
+]

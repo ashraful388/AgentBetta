@@ -1,0 +1,80 @@
+# AgentBetta documentation site (MkDocs Material).
+# Build locally:  pip install -r requirements-docs.txt && mkdocs serve
+# Publish:        mkdocs gh-deploy   (or the docs GitHub Actions workflow)
+
+site_name: AgentBetta Documentation
+site_description: AgentBetta — an adaptive AI nano-agent for efficient, verified task completion.
+site_author: Dr. Md. Ashraful Babu
+site_url: https://ashraful388.github.io/AgentBetta/
+repo_url: https://github.com/ashraful388/AgentBetta
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  logo: assets/agentbetta.png
+  favicon: assets/agentbetta.ico
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+
+exclude_docs: |
+  internal/
+  windows/THIRD_PARTY_NOTICES.md
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - User guide: user-guide.md
+  - Install & build:
+      - Windows installation: windows/installation.md
+      - Windows building: windows/building.md
+      - macOS installation: macos/installation.md
+      - macOS building: macos/building.md
+  - Configuration:
+      - Providers & models: providers-and-models.md
+      - Permissions: permissions.md
+      - Browser & web: browser-and-web.md
+      - Memory: memory.md
+      - Chats & projects: chats-and-projects.md
+      - Updates: updates.md
+  - Reference:
+      - Architecture: architecture.md
+      - Troubleshooting: troubleshooting.md
+      - FAQ: faq.md
+      - License: license.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ashraful388/AgentBetta

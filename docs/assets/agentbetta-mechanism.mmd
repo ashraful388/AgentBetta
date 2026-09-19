@@ -1,0 +1,14 @@
+flowchart TD
+    A[User Task] --> B[Task Characterization]
+    B --> C[Initial Configuration X0]
+    C --> D[Execute]
+    D --> E[Runtime Verification]
+    E -->|Insufficient| F[Diagnose deficient dimension]
+    F --> G[Selective Configuration Expansion]
+    G --> D
+    E -->|Verified success| H[Return Result]
+    H --> I{Research / benchmark mode?}
+    I -->|Yes| J[Counterfactual Contraction Candidates]
+    J --> K[Controlled reruns - ZCode next stage]
+    K --> L[Configuration / Outcome Frontier]
+    I -->|No| M[Finish]

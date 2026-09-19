@@ -1,0 +1,68 @@
+name: Build Windows
+
+# Builds the AgentBetta Setup EXE + portable ZIP. On a v* tag it also publishes
+# a GitHub Release with the assets the in-app updater downloads.
+# Run manually from the Actions tab (workflow_dispatch), or push a v* tag.
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Windows x64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Create virtual environment
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install --upgrade pip
+          .\.venv\Scripts\python.exe -m pip install -e ".[desktop,browser,build]"
+          .\.venv\Scripts\python.exe -m pip install pillow pytest
+
+      - name: Install Playwright Chromium (browser fallback)
+        shell: pwsh
+        run: .\.venv\Scripts\python.exe -m playwright install chromium
+
+      - name: Build (runs tests, PyInstaller, Inno Setup, hashes)
+        shell: pwsh
+        run: powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AgentBetta-Windows-x64
+          if-no-files-found: error
+          path: |
+            release/windows/**/*.exe
+            release/windows/**/*.zip
+            release/windows/**/SHA256SUMS.txt
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/windows/**/AgentBetta-*-Setup.exe
+            release/windows/**/AgentBetta-*-Portable.zip
+            release/windows/**/SHA256SUMS.txt
+          fail_on_unmatched_files: false
+          generate_release_notes: true
