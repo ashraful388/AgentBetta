@@ -13,7 +13,7 @@ buildable tree; the scientific core and the GUI are shared with the Windows buil
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[desktop,browser,build]" pillow pytest
+pip install -e ".[desktop,browser,http,build]" pillow pytest
 playwright install chromium
 bash scripts/build_macos.sh
 ```

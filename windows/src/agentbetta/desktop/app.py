@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 
+from PySide6.QtCore import QThread
 from PySide6.QtWidgets import QApplication
 
 from agentbetta import __version__
@@ -48,7 +50,28 @@ def main(argv: list[str] | None = None) -> int:
         from PySide6.QtCore import QTimer
 
         QTimer.singleShot(1500, app.quit)
-    return app.exec()
+    exit_code = app.exec()
+    _shutdown(app)
+    # A background QThread (e.g. the startup update check) may still be running;
+    # destroying it during Qt teardown crashes the process (0xC0000409). Exit
+    # the process directly instead, after giving threads a brief moment.
+    logging.shutdown()
+    os._exit(int(exit_code))
+
+
+def _shutdown(app: QApplication, timeout_ms: int = 2000) -> None:
+    """Ask background threads to stop and wait briefly for them."""
+
+    threads: list[QThread] = list(app.findChildren(QThread))
+    for widget in app.topLevelWidgets():
+        threads.extend(widget.findChildren(QThread))
+    unique: dict[int, QThread] = {id(t): t for t in threads}
+    for thread in unique.values():
+        if thread.isRunning():
+            thread.requestInterruption()
+    for thread in unique.values():
+        if thread.isRunning():
+            thread.wait(timeout_ms)
 
 
 if __name__ == "__main__":

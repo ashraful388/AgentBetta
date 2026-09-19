@@ -51,8 +51,17 @@ def test_secret_guard_detects_nested_keys():
     assert_no_secret_values({"max_output_tokens": 128})
 
 
-def test_load_rejects_invalid_json(tmp_path):
+def test_load_recovers_from_invalid_json(tmp_path):
+    # A corrupt settings file must not prevent the app from starting: the store
+    # falls back to defaults and preserves the bad file for inspection.
     path = tmp_path / "settings.json"
     path.write_text("{not json", encoding="utf-8")
-    with pytest.raises(ValueError):
-        SettingsStore(path).load()
+    settings = SettingsStore(path).load()
+    assert settings.general.theme == "system"  # defaults
+    assert (tmp_path / "settings.json.corrupt").exists()
+
+
+def test_load_tolerates_utf8_bom(tmp_path):
+    path = tmp_path / "settings.json"
+    path.write_text('{"general": {"theme": "dark"}}', encoding="utf-8-sig")
+    assert SettingsStore(path).load().general.theme == "dark"

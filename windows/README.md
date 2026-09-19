@@ -14,7 +14,7 @@ buildable tree; the scientific core and the GUI are shared with the macOS build.
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -e ".[desktop,browser,build]" pillow
+pip install -e ".[desktop,browser,http,build]" pillow
 powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 

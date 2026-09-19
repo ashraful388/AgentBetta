@@ -106,6 +106,13 @@ class ProviderDialog(QDialog):
         self.is_cloud_check.setChecked(p.is_cloud)
 
     def _refresh_key_status(self) -> None:
+        from agentbetta.settings import keyring_available
+
+        if not keyring_available():
+            self.key_status.setText(
+                "⚠ Secure storage is unavailable — keys will NOT be saved after the app closes."
+            )
+            return
         if self._profile and self.services.secret_store.get_secret(self._profile.secret_ref()):
             self.key_status.setText("A key is stored securely (Windows Credential Manager).")
         else:

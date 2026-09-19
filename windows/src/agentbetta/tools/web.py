@@ -5,7 +5,10 @@ from __future__ import annotations
 from html.parser import HTMLParser
 from typing import Any
 
-import httpx
+try:  # optional dependency: the web tool degrades gracefully without it
+    import httpx
+except ImportError:  # pragma: no cover - environment dependent
+    httpx = None  # type: ignore[assignment]
 
 from agentbetta.permissions import policy
 from agentbetta.tools.guards import requires
@@ -56,6 +59,10 @@ def validate_http_url(url: str) -> None:
 @requires(policy.NETWORK_HTTP)
 def http_fetch(*, ctx: ToolContext, url: str, max_chars: int = 20_000) -> dict[str, Any]:
     validate_http_url(url)
+    if httpx is None:
+        raise RuntimeError(
+            "http_fetch requires the 'httpx' package. Install it with: pip install 'agentbetta[http]'"
+        )
     with httpx.Client(follow_redirects=True, timeout=30.0) as client:
         response = client.get(url, headers={"User-Agent": USER_AGENT})
     raw = response.content[:MAX_BYTES]

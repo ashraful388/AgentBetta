@@ -89,7 +89,7 @@ AgentBetta/
     cd windows
     python -m venv .venv
     .\.venv\Scripts\Activate.ps1
-    pip install -e ".[desktop,browser,build]" pillow
+    pip install -e ".[desktop,browser,http,build]" pillow
     powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
     ```
 
@@ -100,7 +100,7 @@ AgentBetta/
     ```bash
     cd macos
     python3 -m venv .venv && source .venv/bin/activate
-    pip install -e ".[desktop,browser,build]" pillow pytest
+    pip install -e ".[desktop,browser,http,build]" pillow pytest
     playwright install chromium
     bash scripts/build_macos.sh
     ```

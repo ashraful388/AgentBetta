@@ -25,9 +25,16 @@ class SettingsStore:
         if not self.path.exists():
             return AppSettings()
         try:
-            raw = json.loads(self.path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError) as exc:
-            raise ValueError(f"Settings file is not valid JSON: {self.path}") from exc
+            # utf-8-sig tolerates a BOM (e.g. a file edited in Notepad).
+            raw = json.loads(self.path.read_text(encoding="utf-8-sig"))
+        except (json.JSONDecodeError, OSError):
+            # A corrupt settings file must never prevent the app from starting.
+            # Preserve it for inspection and fall back to defaults.
+            try:
+                self.path.replace(self.path.with_name(self.path.name + ".corrupt"))
+            except OSError:
+                pass
+            return AppSettings()
         return AppSettings.from_dict(raw)
 
     def save(self, settings: AppSettings) -> Path:

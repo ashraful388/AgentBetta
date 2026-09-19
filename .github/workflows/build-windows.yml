@@ -38,7 +38,7 @@ jobs:
         run: |
           python -m venv .venv
           .\.venv\Scripts\python.exe -m pip install --upgrade pip
-          .\.venv\Scripts\python.exe -m pip install -e ".[desktop,browser,build]"
+          .\.venv\Scripts\python.exe -m pip install -e ".[desktop,browser,http,build]"
           .\.venv\Scripts\python.exe -m pip install pillow pytest
 
       - name: Install Playwright Chromium (browser fallback)

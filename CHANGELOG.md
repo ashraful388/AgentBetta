@@ -1,5 +1,27 @@
 # Changelog
 
+## Unreleased — provider keys, shutdown and startup fixes
+
+### Fixed
+- **API keys were not persisted in the packaged Windows app.** The frozen build
+  did not bundle `win32ctypes`, so `keyring`'s Windows backend failed and keys
+  fell back to session-only memory — providers appeared added but stopped working
+  after a restart. The PyInstaller spec now bundles `win32ctypes` (and
+  `keyring.backends.Windows`), and `pywin32-ctypes` is an explicit dependency.
+- **Crash on exit (`0xC0000409`).** A background `QThread` (the startup update
+  check) was destroyed while still running during Qt teardown. The app now asks
+  threads to stop, waits briefly, and exits the process directly.
+- **Corrupt/BOM settings file crashed startup.** `SettingsStore.load()` now reads
+  UTF-8 with BOM tolerance and, on invalid JSON, preserves the file as
+  `settings.json.corrupt` and falls back to defaults instead of raising.
+- **`httpx` was a hard import.** `tools/web.py` now imports it lazily, so a
+  missing optional dependency can no longer break the whole tool registry; build
+  instructions include the `http` extra.
+- The provider dialog now warns when secure storage is unavailable instead of
+  silently discarding keys.
+- Both platform trees ship `LICENSES/` and `THIRD_PARTY_NOTICES.md`; the
+  PyInstaller specs anchor paths to their own folder.
+
 ## Unreleased — GUI rebuild (three-pane agent console)
 
 ### Added

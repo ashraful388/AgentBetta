@@ -18,7 +18,7 @@ cd windows
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install --upgrade pip
-pip install -e ".[desktop,browser,build]"
+pip install -e ".[desktop,browser,http,build]"
 pip install pillow pytest
 ```
 

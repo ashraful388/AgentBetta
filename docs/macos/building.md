@@ -18,7 +18,7 @@ cd macos
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
-pip install -e ".[desktop,browser,build]"
+pip install -e ".[desktop,browser,http,build]"
 pip install pillow pytest
 playwright install chromium      # browser fallback runtime
 ```

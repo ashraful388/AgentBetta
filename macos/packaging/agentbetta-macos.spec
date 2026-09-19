@@ -29,7 +29,7 @@ datas = [
     (os.path.join(_ROOT, "src/agentbetta/desktop/resources/agentbetta_logo.png"), "agentbetta/desktop/resources"),
     (os.path.join(_ROOT, "LICENSE"), "."),
     (os.path.join(_ROOT, "LICENSES"), "LICENSES"),
-    (os.path.join(_ROOT, "docs/macos/THIRD_PARTY_NOTICES.md"), "."),
+    (os.path.join(_ROOT, "THIRD_PARTY_NOTICES.md"), "."),
 ]
 if os.path.exists(_ICNS):
     datas.append((_ICNS, "agentbetta/desktop/resources"))

@@ -5,20 +5,28 @@ One-directory is deliberate: Qt, Playwright drivers and native dependencies are
 more reliable and start faster than one-file extraction.
 """
 
+import os
+
 from PyInstaller.utils.hooks import collect_all, collect_submodules
 
+# Anchor paths at this spec's folder (the windows/ tree) regardless of CWD.
+try:
+    _ROOT = os.path.abspath(SPECPATH)
+except NameError:  # pragma: no cover
+    _ROOT = os.path.dirname(os.path.abspath(__file__))
+
 datas = [
-    ("src/agentbetta/desktop/resources/agentbetta.ico", "agentbetta/desktop/resources"),
-    ("src/agentbetta/desktop/resources/agentbetta.png", "agentbetta/desktop/resources"),
-    ("src/agentbetta/desktop/resources/agentbetta_logo.png", "agentbetta/desktop/resources"),
-    ("LICENSE", "."),
-    ("LICENSES", "LICENSES"),
-    ("docs/windows/THIRD_PARTY_NOTICES.md", "."),
+    (os.path.join(_ROOT, "src/agentbetta/desktop/resources/agentbetta.ico"), "agentbetta/desktop/resources"),
+    (os.path.join(_ROOT, "src/agentbetta/desktop/resources/agentbetta.png"), "agentbetta/desktop/resources"),
+    (os.path.join(_ROOT, "src/agentbetta/desktop/resources/agentbetta_logo.png"), "agentbetta/desktop/resources"),
+    (os.path.join(_ROOT, "LICENSE"), "."),
+    (os.path.join(_ROOT, "LICENSES"), "LICENSES"),
+    (os.path.join(_ROOT, "THIRD_PARTY_NOTICES.md"), "."),
 ]
 binaries = []
 hiddenimports = []
 
-for package in ("playwright", "keyring", "httpx"):
+for package in ("playwright", "keyring", "httpx", "win32ctypes"):
     try:
         package_datas, package_binaries, package_hidden = collect_all(package)
     except Exception:
@@ -28,6 +36,11 @@ for package in ("playwright", "keyring", "httpx"):
     hiddenimports += package_hidden
 
 hiddenimports += collect_submodules("keyring.backends")
+# keyring's Windows backend imports win32ctypes inside a try/except; bundle it
+# explicitly so API keys reach Windows Credential Manager in the frozen app.
+hiddenimports += collect_submodules("win32ctypes")
+hiddenimports += collect_submodules("win32ctypes.pywin32")
+hiddenimports += ["keyring.backends.Windows"]
 hiddenimports += collect_submodules("agentbetta.desktop")
 hiddenimports += collect_submodules("agentbetta.updates")
 hiddenimports += ["agentbetta.desktop.app", "agentbetta.desktop.main_window"]
@@ -35,8 +48,8 @@ hiddenimports += ["agentbetta.desktop.app", "agentbetta.desktop.main_window"]
 block_cipher = None
 
 a = Analysis(
-    ["packaging/agentbetta_launcher.py"],
-    pathex=["src"],
+    [os.path.join(_ROOT, "packaging/agentbetta_launcher.py")],
+    pathex=[os.path.join(_ROOT, "src")],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
@@ -64,8 +77,8 @@ exe = EXE(
     upx=False,
     console=False,
     disable_windowed_traceback=False,
-    icon="src/agentbetta/desktop/resources/agentbetta.ico",
-    version="packaging/version_info.txt",
+    icon=os.path.join(_ROOT, "src/agentbetta/desktop/resources/agentbetta.ico"),
+    version=os.path.join(_ROOT, "packaging/version_info.txt"),
 )
 
 coll = COLLECT(
