@@ -54,6 +54,7 @@ a:hover { color: var(--accent-hover); }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .btn.primary:hover { background: var(--accent-hover); color: #fff; }
+.btn img { width: 18px; height: 18px; object-fit: contain; vertical-align: -4px; margin-right: 8px; }
 
 .hero { text-align: center; padding: 64px 20px 32px; }
 .hero-logo { width: 96px; height: 96px; object-fit: contain; }

@@ -7,10 +7,28 @@ permissions, memory and budgets for each task, runs it, **verifies** the
 outcome, and adjusts only the dimensions that were insufficient. It never
 silently escalates permissions.
 
-- **Windows:** install with the Setup EXE (no Python required) — see [Windows installation](windows/installation.md).
-- **macOS:** build the `.app`/`.dmg` from source on a Mac — see [macOS installation](macos/installation.md).
 - **Providers:** local (Ollama) and cloud / OpenAI-compatible — see [Providers & Models](providers-and-models.md).
 - **Safety:** permission profiles, hard-denied actions, approvals — see [Permissions](permissions.md).
+
+## Download
+
+<p align="center">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-Windows-x64-Setup.exe" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
+    <img src="assets/agentbetta.png" alt="" width="20" height="20" />
+    &nbsp;Download for Windows (.exe)
+  </a>
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-macOS-arm64.dmg" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
+    <img src="assets/agentbetta.png" alt="" width="20" height="20" />
+    &nbsp;Download for macOS (.dmg)
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.1">All files (portable ZIP, macOS zip, checksums) →</a>
+</p>
+
+Windows: install with the Setup EXE (no Python required) — see [Windows installation](windows/installation.md).
+macOS: open the `.dmg` and drag to Applications — see [macOS installation](macos/installation.md).
 
 ## What makes it different
 

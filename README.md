@@ -52,14 +52,25 @@ AgentBetta/
 
 ## Install
 
-**Windows 10/11 (x64)** — download `AgentBetta-<version>-Windows-x64-Setup.exe`
-from the [releases page](https://github.com/ashraful388/AgentBetta/releases) and
-run it. Per-user, **no Python or admin required**. A portable ZIP is also
-available.
+<p align="center">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-Windows-x64-Setup.exe">
+    <img src="docs/assets/agentbetta.png" alt="" width="20" height="20" />
+    &nbsp;<b>Download for Windows (.exe)</b>
+  </a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-macOS-arm64.dmg">
+    <img src="docs/assets/agentbetta.png" alt="" width="20" height="20" />
+    &nbsp;<b>Download for macOS (.dmg)</b>
+  </a>
+</p>
 
-**macOS 11+ (Apple silicon)** — download `AgentBetta-<version>-macOS-arm64.dmg`,
-open it and drag **AgentBetta** to *Applications* (or build from
-[`macos/`](macos)).
+<p align="center"><a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.1">All files (portable ZIP, macOS zip, checksums) →</a></p>
+
+- **Windows 10/11 (x64)** — run the Setup EXE. Per-user, **no Python or admin
+  required** (SmartScreen may warn on the unsigned alpha: *More info → Run anyway*).
+- **macOS 11+ (Apple silicon)** — open the `.dmg` and drag **AgentBetta** to
+  *Applications*; on first launch right-click → **Open**. Or build from
+  [`macos/`](macos).
 
 ## Quick start
 
