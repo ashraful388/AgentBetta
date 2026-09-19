@@ -51,6 +51,7 @@ markdown_extensions:
 exclude_docs: |
   internal/
   windows/THIRD_PARTY_NOTICES.md
+  macos/THIRD_PARTY_NOTICES.md
 
 nav:
   - Home: index.md
