@@ -1,6 +1,10 @@
-# AgentBetta™
+<p align="center">
+  <img src="docs/assets/agentbetta.png" alt="AgentBetta logo" width="128" />
+</p>
 
-**An Adaptive AI Nano-Agent for Efficient, Verified Task Completion**
+<h1 align="center">AgentBetta™</h1>
+
+<p align="center"><strong>An Adaptive AI Nano-Agent for Efficient, Verified Task Completion</strong></p>
 
 AgentBetta is a desktop AI agent that configures its model, context, tools,
 permissions, memory and budgets for each task, runs it, **verifies** the
