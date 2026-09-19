@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentbetta.invalid/schema/task-0.1.json",
+  "title": "AgentBetta Task v0.1",
+  "type": "object",
+  "required": ["task"],
+  "properties": {
+    "task": {"type": "string", "minLength": 1},
+    "inputs": {"type": "array", "items": {"type": "string"}},
+    "workspace": {"type": ["string", "null"]},
+    "mode": {"enum": ["adaptive", "fixed", "wholesale"]},
+    "metadata": {"type": "object"}
+  },
+  "additionalProperties": true
+}

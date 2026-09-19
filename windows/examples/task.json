@@ -1,0 +1,7 @@
+{
+  "task": "Summarize the purpose of AgentBetta and state whether it may write files.",
+  "inputs": [],
+  "workspace": ".",
+  "permissions": ["file_read"],
+  "mode": "adaptive"
+}

@@ -2,6 +2,9 @@
 
 Build the `.app`, `.zip` and `.dmg` on a Mac (PyInstaller cannot cross-compile).
 
+The macOS source is in the [`macos/`](https://github.com/ashraful388/AgentBetta/tree/main/macos)
+folder of the repository.
+
 ## Requirements
 
 - macOS 11+
@@ -11,6 +14,7 @@ Build the `.app`, `.zip` and `.dmg` on a Mac (PyInstaller cannot cross-compile).
 ## Setup
 
 ```bash
+cd macos
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -32,7 +36,7 @@ code-signs/notarizes, smoke-launches the bundle, and produces the artifacts.
 ## Outputs
 
 ```text
-release/macos/0.2.0-alpha.1/
+macos/release/macos/0.2.0-alpha.1/
 ├── AgentBetta-0.2.0-alpha.1-macOS-<arch>.zip
 ├── AgentBetta-0.2.0-alpha.1-macOS-<arch>.dmg
 └── SHA256SUMS.txt

@@ -1,9 +1,7 @@
 name: Build macOS
 
-# Builds the AgentBetta .app / .zip / .dmg for Apple silicon and Intel. On a v*
-# tag it also publishes a GitHub Release with the assets the in-app updater
-# downloads. Run manually from the Actions tab (workflow_dispatch), or push a
-# v* tag.
+# Builds the AgentBetta .app / .zip / .dmg from the macos/ folder for Apple
+# silicon and Intel. On a v* tag it publishes a GitHub Release.
 
 on:
   workflow_dispatch:
@@ -13,6 +11,10 @@ on:
 
 permissions:
   contents: write
+
+defaults:
+  run:
+    working-directory: macos
 
 jobs:
   build:
@@ -57,9 +59,9 @@ jobs:
           name: AgentBetta-macOS-${{ matrix.arch }}
           if-no-files-found: error
           path: |
-            release/macos/**/*.zip
-            release/macos/**/*.dmg
-            release/macos/**/SHA256SUMS.txt
+            macos/release/macos/**/*.zip
+            macos/release/macos/**/*.dmg
+            macos/release/macos/**/SHA256SUMS.txt
 
   release:
     name: Publish release

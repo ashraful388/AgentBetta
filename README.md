@@ -11,8 +11,28 @@ permissions, memory and budgets for each task, runs it, **verifies** the
 outcome, and adjusts only the dimensions that were insufficient. It never
 silently escalates permissions.
 
-> **Status:** `0.2.0-alpha.1` — Windows desktop alpha (macOS build from source).
+> **Status:** `0.2.0-alpha.1` — Windows desktop alpha; macOS build from source.
 > Not a stable release; interfaces may change.
+
+## Repository layout
+
+This repository contains **both platforms in one place**, with documentation at
+the root:
+
+```
+AgentBetta/
+├── windows/     # Windows source — buildable tree (Setup EXE + portable ZIP)
+├── macos/       # macOS source  — buildable tree (.app / .dmg)
+├── docs/        # Documentation (also published as a website via mkdocs.yml)
+├── website/     # Standalone landing page
+├── assets/      # Logo / icon
+├── LICENSE, CONTRIBUTING.md, CODE_OF_CONDUCT.md, ...   # project files
+└── .github/workflows/   # build-windows, build-macos, docs
+```
+
+- **Windows source code →** [`windows/`](windows)
+- **macOS source code →** [`macos/`](macos)
+- **Documentation →** [`docs/`](docs/index.md)
 
 ## Highlights
 
@@ -33,11 +53,13 @@ silently escalates permissions.
 ## Install
 
 **Windows 10/11 (x64)** — download `AgentBetta-<version>-Windows-x64-Setup.exe`
-from the [releases page](../../releases) and run it. Per-user, **no Python or
-admin required**. A portable ZIP is also available.
+from the [releases page](https://github.com/ashraful388/AgentBetta/releases) and
+run it. Per-user, **no Python or admin required**. A portable ZIP is also
+available.
 
-**macOS 11+** — build the `.app`/`.dmg` on a Mac (or use the CI build); see the
-macOS docs.
+**macOS 11+ (Apple silicon)** — download `AgentBetta-<version>-macOS-arm64.dmg`,
+open it and drag **AgentBetta** to *Applications* (or build from
+[`macos/`](macos)).
 
 ## Quick start
 
@@ -47,6 +69,32 @@ macOS docs.
 3. **New Task** → type a task → choose a model and permission profile → **Run**.
 4. Read the result and the **Run Inspector** (model, configuration, tools,
    permissions, usage, verification).
+
+## Build from source
+
+=== "Windows"
+
+    ```powershell
+    cd windows
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    pip install -e ".[desktop,browser,build]" pillow
+    powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
+    ```
+
+    Output: `windows\release\windows\<version>\` (Setup EXE, portable ZIP).
+
+=== "macOS"
+
+    ```bash
+    cd macos
+    python3 -m venv .venv && source .venv/bin/activate
+    pip install -e ".[desktop,browser,build]" pillow pytest
+    playwright install chromium
+    bash scripts/build_macos.sh
+    ```
+
+    Output: `macos/release/macos/<version>/` (`.zip`, `.dmg`).
 
 ## Documentation
 
@@ -76,28 +124,11 @@ Task -> characterize -> conservative configuration X0 -> bounded tool loop
 ```
 
 The scientific core is platform-neutral; the GUI, CLI and Python API all call the
-same core. Platform-specific code lives only in
-`src/agentbetta/platform/windows/` and `.../macos/`.
+same core. The only platform-specific code is
+`windows/src/agentbetta/platform/windows/` and
+`macos/src/agentbetta/platform/macos/`.
 
 See [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`SPECIFICATION.md`](SPECIFICATION.md).
-
-## Run from source
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e ".[desktop,browser]"
-agentbetta-gui
-```
-
-## Build the installer
-
-See [Windows building](docs/windows/building.md). In short:
-
-```powershell
-pip install -e ".[desktop,browser,build]" pillow
-powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
-```
 
 ## License & trademark
 
@@ -111,4 +142,5 @@ licenses — see [`LICENSES/`](LICENSES) and
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) (including a detailed **Agent GUI**
+section) and [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).

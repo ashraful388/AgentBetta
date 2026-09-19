@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agentbetta"
+version = "0.2.0a1"
+description = "AgentBetta: An Adaptive AI Nano-Agent for Efficient, Verified Task Completion"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [{name = "Dr. Md. Ashraful Babu"}]
+dependencies = ["keyring>=24.0"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+yaml = ["PyYAML>=6.0"]
+documents = ["pypdf>=5.0"]
+http = ["httpx>=0.27"]
+desktop = ["PySide6>=6.6"]
+browser = ["playwright>=1.40"]
+windows = ["pywinauto>=0.6.8; platform_system == 'Windows'"]
+build = ["pyinstaller>=6.0"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+all = ["PyYAML>=6.0", "pypdf>=5.0", "httpx>=0.27", "PySide6>=6.6", "playwright>=1.40", "pywinauto>=0.6.8; platform_system == 'Windows'"]
+
+[project.scripts]
+agentbetta = "agentbetta.cli:main"
+agentbetta-gui = "agentbetta.desktop.app:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

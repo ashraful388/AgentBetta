@@ -2,6 +2,9 @@
 
 Build from source to produce the Setup EXE and portable ZIP.
 
+The Windows source is in the [`windows/`](https://github.com/ashraful388/AgentBetta/tree/main/windows)
+folder of the repository.
+
 ## Requirements
 
 - Windows 10/11 x64
@@ -11,6 +14,7 @@ Build from source to produce the Setup EXE and portable ZIP.
 ## Setup
 
 ```powershell
+cd windows
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install --upgrade pip
@@ -36,7 +40,7 @@ The script:
 ## Outputs
 
 ```text
-release\windows\0.2.0-alpha.1\
+windows\release\windows\0.2.0-alpha.1\
 ├── AgentBetta-0.2.0-alpha.1-Windows-x64-Setup.exe
 ├── AgentBetta-0.2.0-alpha.1-Windows-x64-Portable.zip
 └── SHA256SUMS.txt
