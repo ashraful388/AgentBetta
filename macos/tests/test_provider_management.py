@@ -106,15 +106,15 @@ def test_services_auto_fills_unmapped_tiers_from_catalog(tmp_path):
 
 def test_model_choices_include_provider_defaults(tmp_path):
     services = _services(tmp_path)
-    cloud = ProviderProfile(name="BAI", type="openai_compatible",
-                            base_url="https://api.b.ai/v1", is_cloud=True,
-                            default_model="qwen3.8-flash")
+    cloud = ProviderProfile(name="Example Cloud", type="openai_compatible",
+                            base_url="https://api.example.com/v1", is_cloud=True,
+                            default_model="example-model")
     services.settings.providers.append(cloud)
     uids = [uid for uid, _ in services.model_choices()]
-    assert f"{cloud.id}::qwen3.8-flash" in uids
+    assert f"{cloud.id}::example-model" in uids
     cloud.enabled = False
     uids = [uid for uid, _ in services.model_choices()]
-    assert f"{cloud.id}::qwen3.8-flash" not in uids
+    assert f"{cloud.id}::example-model" not in uids
 
 
 def test_services_fake_selection(tmp_path):
