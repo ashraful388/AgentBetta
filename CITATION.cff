@@ -3,8 +3,22 @@ title: AgentBetta
 message: "If you use AgentBetta in academic work, please cite it using this metadata."
 type: software
 version: 0.2.0-alpha.1
+date-released: 2026-09-19
 license: MIT
-repository-code: ""
+repository-code: "https://github.com/ashraful388/AgentBetta"
+url: "https://github.com/ashraful388/AgentBetta"
+abstract: >-
+  AgentBetta is an adaptive AI nano-agent that configures its model, context,
+  tools, permissions, memory and computational budgets for each task, verifies
+  the outcome with a runtime validator, and selectively expands only the
+  configuration dimensions that were insufficient.
+keywords:
+  - artificial intelligence
+  - AI agents
+  - adaptive configuration
+  - verification
+  - least privilege
+  - large language models
 authors:
   - name: "Dr. Md. Ashraful Babu"
     affiliation: "Department of Physical Sciences, Independent University, Bangladesh"
