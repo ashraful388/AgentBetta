@@ -135,3 +135,23 @@ def test_ollama_status_handles_unreachable_endpoint(tmp_path):
     ok, message, models = _services(tmp_path).ollama_status("http://127.0.0.1:9")
     assert ok is False
     assert models == []
+
+
+def test_fallback_keeps_a_local_model_as_last_resort(tmp_path):
+    services = _services(tmp_path)
+    primary = ProviderProfile(name="Primary", type="openai_compatible",
+                              base_url="https://primary.example/v1", is_cloud=True)
+    services.settings.providers.extend(
+        [
+            primary,
+            ProviderProfile(name="Cloud A", type="openai_compatible",
+                            base_url="https://a.example/v1", is_cloud=True),
+            ProviderProfile(name="Cloud B", type="openai_compatible",
+                            base_url="https://b.example/v1", is_cloud=True),
+            ProviderProfile(name="Local", type="ollama",
+                            base_url="http://127.0.0.1:11434", is_cloud=False),
+        ]
+    )
+    fallbacks = services._fallback_providers(primary, local_only=False)
+    assert fallbacks, "expected fallbacks"
+    assert any(not getattr(f, "is_cloud", True) for f in fallbacks), "local fallback dropped"

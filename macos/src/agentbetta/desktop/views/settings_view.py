@@ -130,6 +130,26 @@ class ProviderDialog(QDialog):
         self._profile.enabled = self.enabled_check.isChecked()
         return self._profile
 
+    def accept(self) -> None:  # noqa: D102 - Qt override
+        profile = self.result_profile()
+        if profile.type == "ollama":
+            url = (profile.base_url or "").lower()
+            local_markers = ("localhost", "127.0.0.1", "0.0.0.0", "[::1]")
+            if url and not any(marker in url for marker in local_markers):
+                answer = QMessageBox.warning(
+                    self,
+                    "AgentBetta",
+                    "Type is set to 'Ollama (local)' but the endpoint is not a local "
+                    "address:\n\n"
+                    f"{profile.base_url}\n\n"
+                    "If this is a cloud or OpenAI-compatible endpoint, change Type to "
+                    "'OpenAI-compatible'. Save anyway?",
+                    QMessageBox.Yes | QMessageBox.No,
+                )
+                if answer != QMessageBox.Yes:
+                    return
+        super().accept()
+
     def apply_secret(self) -> None:
         ref = self._profile.secret_ref()
         if self.clear_key_check.isChecked():

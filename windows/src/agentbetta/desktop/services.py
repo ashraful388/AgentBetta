@@ -152,8 +152,22 @@ class AppServices:
                 )
             except Exception:
                 continue
-            if len(fallbacks) >= 2:
+            if len(fallbacks) >= 3:
                 break
+        # Always keep a local model as a last resort when one is available, even
+        # if several cloud fallbacks were already added. A small local model is
+        # better than failing outright when every cloud provider is unreachable.
+        if not local_only and local and not any(
+            not getattr(f, "is_cloud", True) for f in fallbacks
+        ):
+            try:
+                fallbacks.append(
+                    self._provider_for_profile(
+                        local[0], local[0].default_model, local_only=local_only
+                    )
+                )
+            except Exception:
+                pass
         return fallbacks
 
     def _build_auto(self, *, local_only: bool) -> TieredProvider:
