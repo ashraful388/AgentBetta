@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — no task time limit
+
+### Changed
+- **Removed the wall-clock time limit for task execution.** A run is no longer
+  aborted by elapsed time (previously a 600 s run cap plus a per-attempt time
+  budget that produced `Structured failure: timeout`). A run now continues until
+  it succeeds, is cancelled, or reaches a step/resource bound.
+  - `RuntimeConfig.max_total_seconds` defaults to **0 = no limit**.
+  - The per-attempt time abort was removed; the τ dimension is now only the
+    per-model-call timeout (default raised to 600 s; ladder 600/1200/2400).
+  - New **Settings ▸ General ▸ “Time limit per run”** control (default *No limit*).
+  - The Run Inspector labels τ as the **per-call timeout**, not a run limit.
+
 ## Unreleased — provider keys, shutdown and startup fixes
 
 ### Fixed

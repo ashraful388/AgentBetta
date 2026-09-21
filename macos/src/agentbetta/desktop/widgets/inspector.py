@@ -283,7 +283,7 @@ class InspectorPanel(QWidget):
                 ("Tools (T)", str(len(config.get("tools") or []))),
                 ("Memory items (Mem)", str(config.get("memory_items", "—"))),
                 ("Token budget (R)", f"{config.get('token_budget', 0):,}"),
-                ("Time budget (τ)", f"{config.get('max_seconds', '—')}s"),
+                ("Per-call timeout (τ)", f"{config.get('max_seconds', '—')}s"),
                 ("Max turns", str(config.get("max_turns", "—"))),
                 ("Max tool calls (I)", str(config.get("max_tool_calls", "—"))),
             ]

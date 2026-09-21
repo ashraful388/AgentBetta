@@ -208,6 +208,15 @@ class SettingsView(QWidget):
         form.addRow("Default run mode:", self.default_mode_combo)
         form.addRow("Default permission profile:", self.default_profile_combo)
         form.addRow("Run/data directory:", self.data_dir_edit)
+        self.max_run_spin = QSpinBox()
+        self.max_run_spin.setRange(0, 86400)
+        self.max_run_spin.setSpecialValueText("No limit")
+        self.max_run_spin.setSuffix(" s")
+        self.max_run_spin.setToolTip(
+            "Wall-clock limit for a whole run. 'No limit' lets a task run until it "
+            "finishes, is cancelled, or reaches a step/resource bound."
+        )
+        form.addRow("Time limit per run:", self.max_run_spin)
         form.addRow("", self.privacy_check)
         form.addRow("", self.local_only_default_check)
 
@@ -435,6 +444,7 @@ class SettingsView(QWidget):
             max(0, self.default_profile_combo.findData(general.default_permission_profile))
         )
         self.data_dir_edit.setText(general.data_dir or "")
+        self.max_run_spin.setValue(int(getattr(general, "max_run_seconds", 0) or 0))
         self.privacy_check.setChecked(general.privacy_mode)
         self.local_only_default_check.setChecked(general.local_only_default)
         self.provider_fallback_check.setChecked(general.provider_fallback)
@@ -472,6 +482,7 @@ class SettingsView(QWidget):
         general.default_mode = self.default_mode_combo.currentData()
         general.default_permission_profile = self.default_profile_combo.currentData()
         general.data_dir = self.data_dir_edit.text().strip() or None
+        general.max_run_seconds = self.max_run_spin.value()
         general.privacy_mode = self.privacy_check.isChecked()
         general.local_only_default = self.local_only_default_check.isChecked()
         general.provider_fallback = self.provider_fallback_check.isChecked()

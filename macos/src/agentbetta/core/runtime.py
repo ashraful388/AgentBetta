@@ -65,11 +65,14 @@ class AgentBetta:
         all_tool_results=[]; cancelled=False; error=None
 
         max_attempts=1 if task.mode == AdaptationMode.FIXED else 1 + self.runtime_config.max_adaptations
-        run_deadline=time.monotonic()+self.runtime_config.max_total_seconds
+        # No wall-clock limit unless the user configured one (max_total_seconds>0).
+        run_deadline=None
+        if self.runtime_config.max_total_seconds and self.runtime_config.max_total_seconds > 0:
+            run_deadline=time.monotonic()+self.runtime_config.max_total_seconds
         try:
             for attempt in range(1, max_attempts+1):
                 self.cancel_token.raise_if_cancelled()
-                if time.monotonic() > run_deadline:
+                if run_deadline is not None and time.monotonic() > run_deadline:
                     verification=VerificationResult(VerificationStatus.ERROR, "Run time budget exceeded", {"time_budget":True})
                     break
                 self.event_bus.emit_type(
@@ -83,7 +86,10 @@ class AgentBetta:
                     ctx.approvals=self.approvals
                 if ctx.memory is None and self.memory is not None:
                     ctx.memory=self.memory
-                deadline=min(time.monotonic()+config.max_seconds, run_deadline)
+                # The per-attempt time budget (tau) is no longer a hard abort:
+                # a run is not killed by elapsed time. tau is still used as the
+                # provider request timeout (see the tool loop).
+                deadline=run_deadline
                 response, tool_results=run_tool_loop(
                     provider=self.provider, task=task, config=config, context=context,
                     tools=self.tools, event_bus=self.event_bus, cancel_token=self.cancel_token,

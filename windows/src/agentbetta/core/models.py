@@ -55,7 +55,9 @@ class AgentConfiguration:
     permissions: PermissionSet = field(default_factory=PermissionSet)
     memory_items: int = 0
     token_budget: int = 2_000
-    max_seconds: int = 180
+    # Per-model-call timeout (seconds). This is NOT a run limit; a run has no
+    # wall-clock cap by default (see RuntimeConfig.max_total_seconds).
+    max_seconds: int = 600
     max_turns: int = 3
     max_tool_calls: int = 3
 
@@ -181,7 +183,10 @@ class RuntimeConfig:
     privacy_mode: bool = False
     max_adaptations: int = 3
     allow_contraction_proposals: bool = True
-    max_total_seconds: int = 600
+    # Wall-clock limit for a whole run in seconds. 0 (the default) means NO time
+    # limit: the run continues until it succeeds, is cancelled, or a hard
+    # resource/step bound is reached. Set a positive value to cap a run.
+    max_total_seconds: int = 0
     memory_items: int | None = None
 
 

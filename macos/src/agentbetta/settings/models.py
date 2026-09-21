@@ -74,6 +74,8 @@ class GeneralSettings:
     privacy_mode: bool = False
     local_only_default: bool = False
     default_permission_profile: str = "safe"
+    # Whole-run wall-clock limit in seconds; 0 means no limit.
+    max_run_seconds: int = 0
     history_limit: int = 500
     launch_behavior: str = "new_task"
     first_run_complete: bool = False

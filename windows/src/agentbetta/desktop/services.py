@@ -264,6 +264,7 @@ class AppServices:
                 run_dir=str(run_dir or self.runs_dir),
                 privacy_mode=privacy,
                 memory_items=self.settings.general.memory_retrieve if memory else 0,
+                max_total_seconds=self.settings.general.max_run_seconds,
             ),
             event_bus=event_bus,
             approvals=approvals,
