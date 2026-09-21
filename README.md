@@ -141,6 +141,28 @@ same core. The only platform-specific code is
 
 See [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`SPECIFICATION.md`](SPECIFICATION.md).
 
+## Citation
+
+If you use AgentBetta in academic work, please cite it as:
+
+> Md. Ashraful Babu. AgentBetta: Verification-driven adaptive configuration of
+> an ai nano-agent. https://github.com/ashraful388/AgentBetta, 2026. Software
+> repository, accessed 19 September 2026.
+
+BibTeX:
+
+```bibtex
+@misc{babu2026agentbetta,
+  author       = {Babu, Md. Ashraful},
+  title        = {{AgentBetta}: Verification-Driven Adaptive Configuration of an AI Nano-Agent},
+  year         = {2026},
+  howpublished = {\url{https://github.com/ashraful388/AgentBetta}},
+  note         = {Software repository, accessed 19 September 2026}
+}
+```
+
+Machine-readable metadata is also in [`CITATION.cff`](CITATION.cff).
+
 ## License & trademark
 
 MIT © 2026 **Dr. Md. Ashraful Babu** — see [`LICENSE`](LICENSE) and
