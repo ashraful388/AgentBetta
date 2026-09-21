@@ -38,8 +38,18 @@ def characterize(task: Task) -> TaskFeatures:
     process_words = ("run program", "launch", "open the app", "executable", "process", "start program")
     delete_words = ("delete", "remove file", "remove the file", "erase", "clean up files")
     memory_words = ("remember", "recall", "memory", "preference", "i prefer", "my name is", "as we discussed", "previously")
-    complex_words = ("compare", "analyze", "synthesize", "prove", "debug", "evaluate", "critique")
+    complex_words = (
+        "compare", "analyze", "synthesize", "prove", "debug", "evaluate", "critique",
+        "build", "implement", "design", "develop", "architecture", "refactor",
+        "production-ready", "production ready", "modular", "component", "engine",
+        "application", "integrate", "research", "literature review", "comprehensive",
+        "step by step", "end-to-end", "from scratch",
+    )
     reasoning = min(2, sum(1 for w in complex_words if w in text))
+    # Long, detailed prompts are almost always multi-step and need a stronger
+    # model; do not route them to the weakest tier.
+    if len(task.objective) > 700:
+        reasoning = min(2, reasoning + 1)
     path_probe = _URL.sub(" ", task.objective)
     est = len(task.objective)
     for inp in task.inputs:

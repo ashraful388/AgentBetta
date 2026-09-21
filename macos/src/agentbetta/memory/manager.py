@@ -75,8 +75,11 @@ class MemoryManager:
             entries, key=lambda entry: score(entry, query_tokens, query_embedding), reverse=True
         )
         top = ranked[:limit]
-        stronger = [entry for entry in top if score(entry, query_tokens, query_embedding) > 0.05]
-        selected = stronger or top
+        # Only inject memories that are clearly relevant to the current task.
+        # A low threshold lets unrelated past tasks leak into the context and
+        # confuse weaker models.
+        stronger = [entry for entry in top if score(entry, query_tokens, query_embedding) >= 0.25]
+        selected = stronger
         if touch:
             for entry in selected:
                 entry.use_count += 1

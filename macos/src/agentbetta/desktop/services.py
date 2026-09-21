@@ -131,9 +131,17 @@ class AppServices:
         """Other enabled providers to try if the primary fails (local first)."""
 
         others = [p for p in self.enabled_providers() if p.id != primary.id]
-        ordered = [p for p in others if not p.is_cloud]
-        if not local_only:
-            ordered += [p for p in others if p.is_cloud]
+        cloud = [p for p in others if p.is_cloud]
+        local = [p for p in others if not p.is_cloud]
+        if local_only:
+            ordered = local
+        elif primary.is_cloud:
+            # Match the primary's locality first: a cloud task should fall back
+            # to another (capable) cloud model before dropping to a small local
+            # model, which would produce poor results on complex tasks.
+            ordered = cloud + local
+        else:
+            ordered = local + cloud
         fallbacks: list[Any] = []
         for profile in ordered:
             try:

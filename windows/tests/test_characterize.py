@@ -25,6 +25,12 @@ def test_browser_words_need_boundaries():
     assert not characterize(Task("explain the opposite of a monochrome image")).needs_network
 
 
+def test_complex_build_tasks_need_a_stronger_tier():
+    assert characterize(Task("Build a production-ready React UI with a modular design")).reasoning_level >= 1
+    # A long, detailed prompt is treated as complex too.
+    assert characterize(Task("do this: " + "step " * 200)).reasoning_level >= 1
+
+
 def test_characterizes_local_pc_access_question():
     f = characterize(Task("can you access my local pc?"))
     assert f.needs_files
