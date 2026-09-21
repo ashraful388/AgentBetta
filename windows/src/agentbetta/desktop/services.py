@@ -44,6 +44,9 @@ class RunRequest:
     privacy: bool = False
     workspace: str | None = None
     inputs: list[str] = field(default_factory=list)
+    # Previous assistant output in this conversation, attached when the task
+    # looks like a follow-up ("run it") so pronouns resolve.
+    previous_output: str | None = None
 
 
 class AppServices:
@@ -57,6 +60,16 @@ class AppServices:
         self.settings: AppSettings = self.settings_store.load()
         self._runs_dir_override = Path(runs_dir) if runs_dir else None
         self.log = get_logger("services")
+        # Self-heal settings written by older builds: drop catalog models whose
+        # provider no longer exists (and stale tier assignments) so the model
+        # selector cannot offer unreachable models.
+        removed_models, removed_tiers = self.settings.prune_orphan_models()
+        if removed_models or removed_tiers:
+            self.log.info(
+                "pruned %s orphaned model(s) and %s stale tier assignment(s)",
+                removed_models, removed_tiers,
+            )
+            self.settings_store.save(self.settings)
         self.browser: BrowserSession | None = None
         self.projects = projects_store or ProjectStore(
             paths.local_app_data_root() / "projects.json"
@@ -90,11 +103,12 @@ class AppServices:
         seen: set[str] = set()
         for model in self.settings.models:
             provider = self.settings.provider(model.provider_id)
-            if provider is not None and not provider.enabled:
+            if provider is None or not provider.enabled:
+                # Skip models whose provider was removed or disabled so the
+                # selector never offers an unreachable model.
                 continue
             label = model.display_name or model.model_id
-            suffix = provider.name if provider else model.provider_id
-            choices.append((model.uid, f"{label} — {suffix}"))
+            choices.append((model.uid, f"{label} — {provider.name}"))
             seen.add(model.uid)
         for provider in self.enabled_providers():
             if provider.default_model:
@@ -287,6 +301,7 @@ class AppServices:
                 privacy_mode=privacy,
                 memory_items=self.settings.general.memory_retrieve if memory else 0,
                 max_total_seconds=self.settings.general.max_run_seconds,
+                unlimited=bool(getattr(self.settings.general, "unlimited", True)),
             ),
             event_bus=event_bus,
             approvals=approvals,

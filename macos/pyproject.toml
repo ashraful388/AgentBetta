@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agentbetta"
-version = "0.2.0a1"
+version = "0.2.0a2"
 description = "AgentBetta: An Adaptive AI Nano-Agent for Efficient, Verified Task Completion"
 readme = "README.md"
 license = {text = "MIT"}

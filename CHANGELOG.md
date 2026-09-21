@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.2.0-alpha.2 — 2026-09-22
+
+### Added
+- **Unlimited mode (no token, time, context or step caps).** New
+  `RuntimeConfig.unlimited` / Settings → General → "No token or time limits"
+  (on by default): `token_budget`, `context_chars`, `max_seconds`, `max_turns`
+  and `max_tool_calls` become `UNLIMITED` (0). Providers omit `max_tokens` /
+  `num_predict`, HTTP uses no timeout, context is never truncated, and
+  adaptation can no longer re-impose a cap.
+- **Follow-up continuity.** A short message in an ongoing chat (e.g. "now run
+  it") now carries the previous assistant output as labeled reference context,
+  so pronouns resolve across runs.
+- **Fallback disclosure.** Results state when a fallback model answered
+  instead of the selected one.
+
+### Fixed
+- **Orphaned models in the selector.** Deleting a provider left its catalog
+  models (and stale tier assignments) visible and selectable. `model_choices()`
+  now hides models whose provider is missing/disabled, removing a provider
+  prunes its models, and settings self-heal on load.
+- **Reasoning models burning the token budget.** A response with empty content
+  and `finish_reason == "length"` (or reasoning tokens ≥ completion tokens) is
+  now a structured `token_limit` failure, so adaptive mode raises the budget
+  instead of reporting "no usable output".
+- **Execution intent detection.** "run it" / "execute …" now expose shell and
+  process tools (previously no tools were exposed at all).
+- **Server-closed connections** now surface an actionable message (request too
+  large or server-side cap; try a smaller task or a different model) instead of
+  raw `RemoteDisconnected`.
+
 ## Unreleased — no task time limit, generous interaction bounds
 
 ### Changed

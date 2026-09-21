@@ -237,6 +237,14 @@ class SettingsView(QWidget):
             "finishes, is cancelled, or reaches a step/resource bound."
         )
         form.addRow("Time limit per run:", self.max_run_spin)
+
+        self.unlimited_check = QCheckBox("No token or time limits (run until finished)")
+        self.unlimited_check.setToolTip(
+            "When enabled, runs have no token budget, no per-call timeout and no "
+            "turn/tool-call cap. Disable to let AgentBetta bound and adapt resources."
+        )
+        self.unlimited_check.toggled.connect(self.max_run_spin.setDisabled)
+        form.addRow("Limits:", self.unlimited_check)
         form.addRow("", self.privacy_check)
         form.addRow("", self.local_only_default_check)
 
@@ -473,6 +481,8 @@ class SettingsView(QWidget):
         )
         self.data_dir_edit.setText(general.data_dir or "")
         self.max_run_spin.setValue(int(getattr(general, "max_run_seconds", 0) or 0))
+        self.unlimited_check.setChecked(bool(getattr(general, "unlimited", True)))
+        self.max_run_spin.setDisabled(self.unlimited_check.isChecked())
         self.privacy_check.setChecked(general.privacy_mode)
         self.local_only_default_check.setChecked(general.local_only_default)
         self.provider_fallback_check.setChecked(general.provider_fallback)
@@ -511,7 +521,8 @@ class SettingsView(QWidget):
         general.default_mode = self.default_mode_combo.currentData()
         general.default_permission_profile = self.default_profile_combo.currentData()
         general.data_dir = self.data_dir_edit.text().strip() or None
-        general.max_run_seconds = self.max_run_spin.value()
+        general.unlimited = self.unlimited_check.isChecked()
+        general.max_run_seconds = 0 if general.unlimited else self.max_run_spin.value()
         general.auto_approve_high_risk = self.auto_approve_check.isChecked()
         general.privacy_mode = self.privacy_check.isChecked()
         general.local_only_default = self.local_only_default_check.isChecked()
@@ -631,6 +642,9 @@ class SettingsView(QWidget):
             return
         self.services.secret_store.delete_secret(profile.secret_ref())
         self.services.settings.providers.remove(profile)
+        # Drop the removed provider's catalog models and any tier assignment
+        # that pointed at them, so the model selector cannot offer orphans.
+        self.services.settings.prune_orphan_models()
         self._persist()
         self.refresh_provider_table()
 

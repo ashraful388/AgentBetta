@@ -6,11 +6,11 @@ tools to use it.
 ## 1. Install AgentBetta
 
 <p align="center">
-  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-Windows-x64-Setup.exe" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-Windows-x64-Setup.exe" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
     <img src="assets/agentbetta.png" alt="" width="20" height="20" />
     &nbsp;Download for Windows (.exe)
   </a>
-  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-macOS-arm64.dmg" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-macOS-arm64.dmg" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
     <img src="assets/agentbetta.png" alt="" width="20" height="20" />
     &nbsp;Download for macOS (.dmg)
   </a>

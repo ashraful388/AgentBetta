@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from typing import Any
 
 from PySide6.QtCore import Qt, Signal
@@ -38,6 +39,23 @@ _WRITE_TOOLS = {
     "browser_download",
     "browser_screenshot",
 }
+
+_FOLLOWUP_CUES = re.compile(
+    r"\b(it|its|this|that|these|those|them|again|continue|continuing|also|"
+    r"instead|above|previous|last|same|run it|do it|fix it|now)\b",
+    re.IGNORECASE,
+)
+
+
+def _is_followup(objective: str, has_prior_output: bool) -> bool:
+    """Heuristic: a short message in an ongoing chat, or one referencing prior
+    work, is a follow-up that needs the previous assistant output as context."""
+
+    if not has_prior_output or not objective.strip():
+        return False
+    if len(objective.strip()) < 200:
+        return True
+    return bool(_FOLLOWUP_CUES.search(objective))
 
 
 def _extract_artifacts(tool_results: list[dict[str, Any]]) -> list[str]:
@@ -365,6 +383,14 @@ class TaskView(QWidget):
         else:
             self.run_task()
 
+    def _previous_agent_output(self) -> str:
+        if self._conversation is None:
+            return ""
+        for message in reversed(self._conversation.messages):
+            if message.role == "agent" and message.text.strip():
+                return message.text
+        return ""
+
     def run_task(self) -> None:
         objective = self.composer.toPlainText().strip()
         if not objective or self._running():
@@ -372,6 +398,10 @@ class TaskView(QWidget):
         selection = self.model_combo.currentData() or "auto"
         profile = self.profile_combo.currentData() or "safe"
         mode = self.mode_combo.currentData() or "adaptive"
+        previous_output = self._previous_agent_output()
+        followup_output = (
+            previous_output if _is_followup(objective, bool(previous_output)) else None
+        )
         request = RunRequest(
             objective=objective,
             selection=selection,
@@ -381,6 +411,7 @@ class TaskView(QWidget):
             privacy=self.services.settings.general.privacy_mode,
             workspace=self._workspace(),
             inputs=list(self.attachments),
+            previous_output=followup_output,
         )
         self._say_user(objective)
         self.composer.clear()

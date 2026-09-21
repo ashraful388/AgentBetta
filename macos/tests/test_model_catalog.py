@@ -1,4 +1,4 @@
-from agentbetta.settings import AppSettings, ModelCatalog, ModelProfile
+from agentbetta.settings import AppSettings, ModelCatalog, ModelProfile, ProviderProfile
 
 
 def test_uid_and_tier_label():
@@ -31,3 +31,20 @@ def test_tier_mapping_resolves_to_model():
     settings = AppSettings(models=[model], tier_map={"2": "p::m"})
     assert settings.model_for_tier(2).model_id == "m"
     assert settings.model_for_tier(0) is None
+
+
+def test_prune_orphan_models_drops_missing_provider_and_tier():
+    provider = ProviderProfile(id="p1")
+    settings = AppSettings(
+        providers=[provider],
+        models=[
+            ModelProfile(provider_id="p1", model_id="keep"),
+            ModelProfile(provider_id="gone", model_id="drop"),
+        ],
+        tier_map={"0": "p1::keep", "1": "gone::drop"},
+    )
+    removed_models, removed_tiers = settings.prune_orphan_models()
+    assert removed_models == 1
+    assert removed_tiers == 1
+    assert [m.model_id for m in settings.models] == ["keep"]
+    assert settings.tier_map == {"0": "p1::keep"}

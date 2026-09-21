@@ -144,15 +144,21 @@ def selective_expand(config: AgentConfiguration, dimensions: Iterable[str], feat
         if dim == "model_tier":
             out=replace(out, model_tier=min(MODEL_MAX, out.model_tier+1))
         elif dim == "context_chars":
-            out=replace(out, context_chars=_next(out.context_chars, CONTEXT_LADDER))
+            if out.context_chars > 0:
+                out=replace(out, context_chars=_next(out.context_chars, CONTEXT_LADDER))
         elif dim == "token_budget":
-            out=replace(out, token_budget=_next(out.token_budget, TOKEN_LADDER))
+            # 0 is the UNLIMITED sentinel: never re-impose a cap on it.
+            if out.token_budget > 0:
+                out=replace(out, token_budget=_next(out.token_budget, TOKEN_LADDER))
         elif dim == "max_seconds":
-            out=replace(out, max_seconds=_next(out.max_seconds, TIME_LADDER))
+            if out.max_seconds > 0:
+                out=replace(out, max_seconds=_next(out.max_seconds, TIME_LADDER))
         elif dim == "max_turns":
-            out=replace(out, max_turns=_next(out.max_turns, TURN_LADDER))
+            if out.max_turns > 0:
+                out=replace(out, max_turns=_next(out.max_turns, TURN_LADDER))
         elif dim == "max_tool_calls":
-            out=replace(out, max_tool_calls=_next(out.max_tool_calls, TOOLCALL_LADDER))
+            if out.max_tool_calls > 0:
+                out=replace(out, max_tool_calls=_next(out.max_tool_calls, TOOLCALL_LADDER))
         elif dim == "memory_items":
             out=replace(out, memory_items=_next(out.memory_items, MEMORY_LADDER))
         elif dim == "tools":

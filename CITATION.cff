@@ -2,7 +2,7 @@ cff-version: 1.2.0
 title: AgentBetta
 message: "If you use AgentBetta in academic work, please cite it using this metadata."
 type: software
-version: 0.2.0-alpha.1
+version: 0.2.0-alpha.2
 date-released: 2026-09-19
 license: MIT
 repository-code: "https://github.com/ashraful388/AgentBetta"

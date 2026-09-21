@@ -2,7 +2,7 @@
 ; Per-user install by default; does not delete user data on uninstall.
 
 #define MyAppName "AgentBetta"
-#define MyAppVersion "0.2.0-alpha.1"
+#define MyAppVersion "0.2.0-alpha.2"
 #define MyAppPublisher "AgentBetta Project"
 #define MyAppExeName "AgentBetta.exe"
 
@@ -17,7 +17,7 @@ DefaultGroupName=AgentBetta
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=..\release\windows\0.2.0-alpha.1
+OutputDir=..\release\windows\0.2.0-alpha.2
 OutputBaseFilename=AgentBetta-{#MyAppVersion}-Windows-x64-Setup
 Compression=lzma2
 SolidCompression=yes
@@ -26,7 +26,7 @@ SetupIconFile=..\src\agentbetta\desktop\resources\agentbetta.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-VersionInfoVersion=0.2.0.1
+VersionInfoVersion=0.2.0.2
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription=AgentBetta installer
 DisableWelcomePage=no

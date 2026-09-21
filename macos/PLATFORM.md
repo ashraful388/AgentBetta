@@ -19,11 +19,11 @@ playwright install chromium      # browser fallback runtime
 bash scripts/build_macos.sh
 ```
 
-Outputs in `release/macos/0.2.0-alpha.1/`:
+Outputs in `release/macos/0.2.0-alpha.2/`:
 
 ```text
-AgentBetta-0.2.0-alpha.1-macOS.zip
-AgentBetta-0.2.0-alpha.1-macOS.dmg
+AgentBetta-0.2.0-alpha.2-macOS.zip
+AgentBetta-0.2.0-alpha.2-macOS.dmg
 SHA256SUMS.txt
 ```
 

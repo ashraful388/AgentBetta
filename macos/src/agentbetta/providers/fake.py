@@ -70,7 +70,11 @@ class FakeProvider(BaseProvider):
             "selective adaptation, and research-mode contraction proposals."
         )
         if context:
-            limit = config.context_chars if config is not None else len(context)
+            limit = (
+                config.context_chars
+                if config is not None and config.context_chars > 0
+                else len(context)
+            )
             summary += f" Context supplied: {min(len(context), limit)} characters."
         return ProviderResponse(summary, usage={"model_calls": 1})
 

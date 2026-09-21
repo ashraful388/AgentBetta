@@ -192,6 +192,18 @@ def test_task_view_uses_single_run_stop_button(qapp, tmp_path):
     assert window.nav.count() >= 8
 
 
+def test_followup_detection_needs_prior_output():
+    from agentbetta.desktop.views.task_view import _is_followup
+
+    assert _is_followup("now run it", True)
+    assert not _is_followup("now run it", False)
+    assert not _is_followup("", True)
+    assert _is_followup("Calculate 17 * 23", True)
+    long_standalone = "Write a comprehensive report on renewable energy. " * 20
+    assert not _is_followup(long_standalone, True)
+    assert _is_followup(long_standalone + " Update it to include solar.", True)
+
+
 def test_project_store_roundtrip(tmp_path):
     from agentbetta.desktop.projects import Project, ProjectStore
 

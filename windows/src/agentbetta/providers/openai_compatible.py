@@ -29,6 +29,24 @@ def _parse_tool_calls(raw_calls: list[dict] | None) -> list[ToolCall]:
     return calls
 
 
+def _budget_exhausted(finish_reason: str | None, usage: dict) -> bool:
+    """True when the model consumed its token budget without an answer.
+
+    Reasoning models behind OpenAI-compatible gateways often spend every
+    completion token on hidden reasoning and return an empty ``content``. The
+    gateway then reports ``finish_reason == "length"`` (and a reasoning-token
+    count). This is a token-budget problem, not a provider failure, so the
+    runtime should be able to raise the budget instead of reporting "no output".
+    """
+
+    if finish_reason == "length":
+        return True
+    details = usage.get("completion_tokens_details") or {}
+    reasoning = details.get("reasoning_tokens")
+    completion = usage.get("completion_tokens")
+    return bool(reasoning and completion and reasoning >= completion)
+
+
 class OpenAICompatibleProvider(BaseProvider):
     name = "openai-compatible"
     is_cloud = True
@@ -77,8 +95,9 @@ class OpenAICompatibleProvider(BaseProvider):
         payload: dict = {
             "model": request.model or self.model,
             "messages": self._prepare_messages(request.messages),
-            "max_tokens": request.max_tokens,
         }
+        if request.max_tokens and request.max_tokens > 0:
+            payload["max_tokens"] = request.max_tokens
         if request.tools:
             payload["tools"] = request.tools
         try:
@@ -86,7 +105,7 @@ class OpenAICompatibleProvider(BaseProvider):
                 f"{self.base_url}/chat/completions",
                 payload,
                 headers=self._headers(),
-                timeout=request.timeout or self.timeout,
+                timeout=request.timeout if request.timeout is not None else self.timeout,
             )
         except Exception as exc:
             raise type(exc)(self._sanitize(str(exc))) from None
@@ -95,11 +114,27 @@ class OpenAICompatibleProvider(BaseProvider):
         message = choice.get("message") or {}
         text = str(message.get("content") or "")
         tool_calls = _parse_tool_calls(message.get("tool_calls"))
+        usage = data.get("usage") or {}
+        finish_reason = choice.get("finish_reason")
+        if not text.strip() and not tool_calls and _budget_exhausted(finish_reason, usage):
+            return ProviderResponse(
+                "",
+                usage=usage,
+                raw={
+                    "failure": "token_limit",
+                    "message": (
+                        "The model exhausted its token budget (typically on hidden "
+                        "reasoning) before producing an answer."
+                    ),
+                    "finish_reason": finish_reason,
+                },
+                finish_reason=finish_reason,
+            )
         return ProviderResponse(
             text,
-            usage=data.get("usage") or {},
+            usage=usage,
             raw=data,
-            finish_reason=choice.get("finish_reason"),
+            finish_reason=finish_reason,
             tool_calls=tool_calls,
         )
 

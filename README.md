@@ -11,7 +11,7 @@ permissions, memory and budgets for each task, runs it, **verifies** the
 outcome, and adjusts only the dimensions that were insufficient. It never
 silently escalates permissions.
 
-> **Status:** `0.2.0-alpha.1` — Windows desktop alpha; macOS build from source.
+> **Status:** `0.2.0-alpha.2` — Windows desktop alpha; macOS build from source.
 > Not a stable release; interfaces may change.
 
 ## Repository layout
@@ -53,18 +53,18 @@ AgentBetta/
 ## Install
 
 <p align="center">
-  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-Windows-x64-Setup.exe">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-Windows-x64-Setup.exe">
     <img src="docs/assets/agentbetta.png" alt="" width="20" height="20" />
     &nbsp;<b>Download for Windows (.exe)</b>
   </a>
   &nbsp;&nbsp;&nbsp;
-  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.1/AgentBetta-0.2.0-alpha.1-macOS-arm64.dmg">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-macOS-arm64.dmg">
     <img src="docs/assets/agentbetta.png" alt="" width="20" height="20" />
     &nbsp;<b>Download for macOS (.dmg)</b>
   </a>
 </p>
 
-<p align="center"><a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.1">All files (portable ZIP, macOS zip, checksums) →</a></p>
+<p align="center"><a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.2">All files (portable ZIP, macOS zip, checksums) →</a></p>
 
 - **Windows 10/11 (x64)** — run the Setup EXE. Per-user, **no Python or admin
   required** (SmartScreen may warn on the unsigned alpha: *More info → Run anyway*).

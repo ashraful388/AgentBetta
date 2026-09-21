@@ -35,3 +35,13 @@ def test_characterizes_local_pc_access_question():
     f = characterize(Task("can you access my local pc?"))
     assert f.needs_files
     assert not characterize(Task("summarize the specification")).needs_files
+
+
+def test_run_intent_enables_shell_and_process_tools():
+    f = characterize(Task("now run it"))
+    assert f.needs_shell and f.needs_process
+    assert characterize(Task("execute the deploy script")).needs_shell
+
+
+def test_run_word_needs_boundaries():
+    assert not characterize(Task("prune the branches")).needs_shell

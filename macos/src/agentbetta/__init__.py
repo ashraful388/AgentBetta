@@ -11,6 +11,6 @@ __all__ = [
     "AgentBetta", "Task", "TaskFeatures", "AgentConfiguration", "PermissionSet",
     "RuntimeConfig", "VerificationResult", "AdaptationEvent", "Result",
 ]
-__version__ = "0.2.0a1"
+__version__ = "0.2.0a2"
 __license__ = "MIT"
 __author__ = "Dr. Md. Ashraful Babu"

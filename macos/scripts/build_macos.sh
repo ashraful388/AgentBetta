@@ -10,7 +10,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 PY="${PYTHON:-python3}"
-VERSION="0.2.0-alpha.1"
+VERSION="0.2.0-alpha.2"
 ARCH="$(uname -m)"
 RELEASE_DIR="$ROOT/release/macos/$VERSION"
 APP="$ROOT/dist/AgentBetta.app"

@@ -103,8 +103,8 @@ app = BUNDLE(
     info_plist={
         "CFBundleName": "AgentBetta",
         "CFBundleDisplayName": "AgentBetta",
-        "CFBundleVersion": "0.2.0.1",
-        "CFBundleShortVersionString": "0.2.0-alpha.1",
+        "CFBundleVersion": "0.2.0.2",
+        "CFBundleShortVersionString": "0.2.0-alpha.2",
         "NSHighResolutionCapable": True,
         "LSMinimumSystemVersion": "11.0",
         "NSHumanReadableCopyright": "AgentBetta Project",

@@ -25,6 +25,12 @@ _PC_WORDS = re.compile(
     r"hard drive|desktop|documents|downloads|directory|machine)\b",
     re.IGNORECASE,
 )
+# Execution intent ("run it", "execute the script"). Word-boundary matched so
+# "running" a task still counts but "prune" or "brunette" do not.
+_RUN_WORDS = re.compile(
+    r"\b(run|runs|running|execute|executes|executing|execution)\b",
+    re.IGNORECASE,
+)
 
 
 def characterize(task: Task) -> TaskFeatures:
@@ -71,8 +77,8 @@ def characterize(task: Task) -> TaskFeatures:
         needs_code=any(w in text for w in code_words),
         needs_calculation=any(w in text for w in calc_words) or bool(re.search(r"\d+\s*[*+/\-]\s*\d+", text)),
         needs_network=any(w in text for w in net_words) or bool(_BROWSER_WORDS.search(text)),
-        needs_shell=any(w in text for w in shell_words),
-        needs_process=any(w in text for w in process_words),
+        needs_shell=any(w in text for w in shell_words) or bool(_RUN_WORDS.search(text)),
+        needs_process=any(w in text for w in process_words) or bool(_RUN_WORDS.search(text)),
         needs_delete=any(w in text for w in delete_words),
         needs_memory=any(w in text for w in memory_words),
         reasoning_level=reasoning,

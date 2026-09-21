@@ -41,6 +41,25 @@ def test_fallback_raises_when_all_fail():
         provider.chat(LLMRequest(messages=[]))
 
 
+def test_result_markdown_discloses_fallback_model():
+    from agentbetta.desktop.widgets.report import build_result_markdown
+
+    text = build_result_markdown(
+        {
+            "output": "done",
+            "verified": True,
+            "attempts": 1,
+            "provider": "ollama",
+            "model_id": "qwen3:1.7b",
+            "requested_model": "deepseek-v4.1-flash",
+            "used_fallback": True,
+        }
+    )
+    assert "Fallback model used" in text
+    assert "deepseek-v4.1-flash" in text
+    assert "qwen3:1.7b" in text
+
+
 def test_http_error_transient_classification():
     assert ProviderHTTPError("HTTP 522: x", code=522).transient
     assert ProviderHTTPError("HTTP 503: x", code=503).transient

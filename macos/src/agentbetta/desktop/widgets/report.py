@@ -37,6 +37,13 @@ def build_result_markdown(summary: dict[str, Any]) -> str:
         f"\n\n---\n**{status}** · attempts: {summary.get('attempts')} · "
         f"provider: {summary.get('provider') or 'n/a'} · model: {summary.get('model_id') or 'n/a'}"
     )
+    if summary.get("used_fallback"):
+        requested = summary.get("requested_model") or "the selected model"
+        body += (
+            f"\n\n> **Fallback model used.** `{requested}` was unavailable, so this run "
+            f"completed on `{summary.get('model_id') or 'another model'}`. Turn off "
+            "provider fallback in **Settings ▸ Reliability** to fail instead."
+        )
     return body + footer
 
 

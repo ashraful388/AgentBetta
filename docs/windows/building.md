@@ -40,9 +40,9 @@ The script:
 ## Outputs
 
 ```text
-windows\release\windows\0.2.0-alpha.1\
-├── AgentBetta-0.2.0-alpha.1-Windows-x64-Setup.exe
-├── AgentBetta-0.2.0-alpha.1-Windows-x64-Portable.zip
+windows\release\windows\0.2.0-alpha.2\
+├── AgentBetta-0.2.0-alpha.2-Windows-x64-Setup.exe
+├── AgentBetta-0.2.0-alpha.2-Windows-x64-Portable.zip
 └── SHA256SUMS.txt
 ```
 

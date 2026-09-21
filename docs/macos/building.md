@@ -36,9 +36,9 @@ code-signs/notarizes, smoke-launches the bundle, and produces the artifacts.
 ## Outputs
 
 ```text
-macos/release/macos/0.2.0-alpha.1/
-├── AgentBetta-0.2.0-alpha.1-macOS-<arch>.zip
-├── AgentBetta-0.2.0-alpha.1-macOS-<arch>.dmg
+macos/release/macos/0.2.0-alpha.2/
+├── AgentBetta-0.2.0-alpha.2-macOS-<arch>.zip
+├── AgentBetta-0.2.0-alpha.2-macOS-<arch>.dmg
 └── SHA256SUMS.txt
 ```
 

@@ -76,6 +76,9 @@ class GeneralSettings:
     default_permission_profile: str = "safe"
     # Whole-run wall-clock limit in seconds; 0 means no limit.
     max_run_seconds: int = 0
+    # When True, a run has no token budget, per-call timeout or interaction
+    # caps: it continues until it succeeds or is cancelled.
+    unlimited: bool = True
     # When True, high-risk actions run without a prompt for every profile.
     # (The Full Computer profile always auto-approves.)
     auto_approve_high_risk: bool = False
@@ -151,3 +154,20 @@ class AppSettings:
     def model_for_tier(self, tier: int) -> ModelProfile | None:
         uid = self.tier_map.get(str(tier))
         return self.model(uid) if uid else None
+
+    def prune_orphan_models(self) -> tuple[int, int]:
+        """Drop catalog models whose provider no longer exists, plus stale tier
+        assignments that point at a removed model.
+
+        Returns ``(models_removed, tiers_removed)``.
+        """
+
+        valid_providers = {p.id for p in self.providers}
+        kept = [m for m in self.models if m.provider_id in valid_providers]
+        models_removed = len(self.models) - len(kept)
+        self.models = kept
+        valid_uids = {m.uid for m in self.models}
+        pruned_map = {tier: uid for tier, uid in self.tier_map.items() if uid in valid_uids}
+        tiers_removed = len(self.tier_map) - len(pruned_map)
+        self.tier_map = pruned_map
+        return models_removed, tiers_removed

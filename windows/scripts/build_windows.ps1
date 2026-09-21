@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $python = Join-Path $root ".venv\Scripts\python.exe"
 $pyinstaller = Join-Path $root ".venv\Scripts\pyinstaller.exe"
-$version = "0.2.0-alpha.1"
+$version = "0.2.0-alpha.2"
 $releaseDir = Join-Path $root "release\windows\$version"
 
 # Locate the Inno Setup compiler in common install locations or on PATH.

@@ -45,7 +45,8 @@ def build_messages(
         system = SYSTEM_PROMPT + "\n\n" + TOOL_PROTOCOL_INSTRUCTIONS
     user = f"TASK:\n{task.objective}"
     if context:
-        user += f"\n\nCONTEXT:\n{context[: config.context_chars]}"
+        visible = context if config.context_chars <= 0 else context[: config.context_chars]
+        user += f"\n\nCONTEXT:\n{visible}"
     return [
         {"role": "system", "content": system},
         {"role": "user", "content": user},

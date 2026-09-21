@@ -39,18 +39,25 @@ class OllamaProvider(BaseProvider):
         self.disable_thinking = disable_thinking
 
     def chat(self, request: LLMRequest) -> ProviderResponse:
+        options: dict = {}
+        if request.max_tokens and request.max_tokens > 0:
+            options["num_predict"] = request.max_tokens
         payload: dict = {
             "model": request.model or self.model,
             "messages": request.messages,
             "stream": False,
-            "options": {"num_predict": request.max_tokens},
+            "options": options,
         }
         if self.disable_thinking:
             # qwen3-class models support disabling chain-of-thought generation.
             payload["think"] = False
         if request.tools:
             payload["tools"] = request.tools
-        data = post_json(f"{self.base_url}/api/chat", payload, timeout=request.timeout or self.timeout)
+        data = post_json(
+            f"{self.base_url}/api/chat",
+            payload,
+            timeout=request.timeout if request.timeout is not None else self.timeout,
+        )
         message = data.get("message") or {}
         text = str(message.get("content") or "")
         tool_calls = _parse_tool_calls(message.get("tool_calls"))

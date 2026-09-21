@@ -218,7 +218,7 @@ def run_tool_loop(
     schemas = tools.schemas(list(config.tools)) if native_tools else []
     model = getattr(provider, "model", "")
     tool_results: list[ToolResult] = []
-    max_turns = max(1, config.max_turns)
+    max_turns = config.max_turns if config.max_turns > 0 else None
 
     def _is_transient(exc: Exception) -> bool:
         flag = getattr(exc, "transient", None)
@@ -255,7 +255,7 @@ def run_tool_loop(
         token.raise_if_cancelled()
         if deadline is not None and time.monotonic() > deadline:
             return ProviderResponse("", raw={"failure": "timeout"}), tool_results
-        if turn >= max_turns:
+        if max_turns is not None and turn >= max_turns:
             return ProviderResponse("", raw={"failure": "turn_limit"}), tool_results
         turn += 1
         bus.emit_type(RunEventType.PROVIDER_STARTED, turn=turn, tools=list(config.tools))
@@ -303,7 +303,7 @@ def run_tool_loop(
                 call_id=call.call_id,
                 arguments_summary=summarize_arguments(call.arguments),
             )
-            if len(tool_results) >= config.max_tool_calls:
+            if config.max_tool_calls > 0 and len(tool_results) >= config.max_tool_calls:
                 return ProviderResponse("", raw={"failure": "tool_limit"}), tool_results
             spec = tools.spec(call.tool_name)
             permission_ok = spec is None or spec.permission is None or ctx.permissions.permits(

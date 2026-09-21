@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import http.client
 import json
 import urllib.error
 import urllib.request
@@ -22,17 +23,26 @@ class ProviderHTTPError(RuntimeError):
 
 
 def _request(url: str, *, method: str, payload: dict[str, Any] | None, headers: dict[str, str] | None,
-             timeout: int) -> Any:
+             timeout: int | None) -> Any:
     body = json.dumps(payload).encode("utf-8") if payload is not None else None
     hdr = {"Content-Type": "application/json", "Accept": "application/json", **(headers or {})}
     req = urllib.request.Request(url, data=body, headers=hdr, method=method)
+    # timeout <= 0 or None means "no timeout": block until the server responds.
+    effective = timeout if timeout and timeout > 0 else None
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as response:
+        with urllib.request.urlopen(req, timeout=effective) as response:
             raw = response.read().decode("utf-8")
             return json.loads(raw) if raw else {}
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", errors="replace")[:1000]
         raise ProviderHTTPError(f"HTTP {e.code}: {detail}", code=e.code, detail=detail) from e
+    except (http.client.RemoteDisconnected, ConnectionResetError, BrokenPipeError) as e:
+        raise ProviderHTTPError(
+            "The model server closed the connection without a response. "
+            "The request was likely too large or the server hit its own "
+            "generation/time cap. Try a smaller task, a different model, or a "
+            "provider with longer limits."
+        ) from e
     except urllib.error.URLError as e:
         raise ProviderHTTPError(f"Provider connection failed: {e.reason}") from e
     except json.JSONDecodeError as e:

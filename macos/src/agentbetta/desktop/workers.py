@@ -82,7 +82,10 @@ class RunWorker(QThread):
                 workspace=self.request.workspace,
                 permissions=profile_permission_set(self.request.profile),
                 mode=AdaptationMode(self.request.mode),
-                metadata={"local_only": self.request.local_only},
+                metadata={
+                    "local_only": self.request.local_only,
+                    "previous_output": getattr(self.request, "previous_output", None),
+                },
             )
             result = controller.run(task, mode=self.request.mode)
             usage: dict[str, Any] = {}
@@ -136,4 +139,6 @@ class RunWorker(QThread):
             },
             "model_id": getattr(provider, "last_model_id", None) or getattr(provider, "model", None),
             "provider": getattr(provider, "last_provider_name", None) or getattr(provider, "name", None),
+            "requested_model": getattr(provider, "model", None),
+            "used_fallback": bool(getattr(provider, "used_fallback", False)),
         }

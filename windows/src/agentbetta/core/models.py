@@ -5,6 +5,13 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
+# Sentinel for "no limit". Applied to AgentConfiguration.token_budget,
+# context_chars, max_seconds, max_turns and max_tool_calls when the user
+# disables limits (RuntimeConfig.unlimited). Providers omit max_tokens and
+# timeouts when the value is UNLIMITED, context is not truncated, and the tool
+# loop treats the interaction bounds as unbounded.
+UNLIMITED = 0
+
 
 class VerificationStatus(str, Enum):
     PASS = "PASS"
@@ -190,6 +197,10 @@ class RuntimeConfig:
     # resource/step bound is reached. Set a positive value to cap a run.
     max_total_seconds: int = 0
     memory_items: int | None = None
+    # When True, token budget, input context, per-call timeout and interaction
+    # bounds are set to UNLIMITED (no cap) for every attempt. The run then
+    # continues until it succeeds or is cancelled.
+    unlimited: bool = False
 
 
 @dataclass

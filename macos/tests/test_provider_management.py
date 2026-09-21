@@ -8,7 +8,13 @@ from agentbetta.core.models import AgentConfiguration, ProviderResponse
 from agentbetta.desktop.services import AppServices
 from agentbetta.providers import FakeProvider, TieredProvider
 from agentbetta.providers.base import BaseProvider, LLMRequest
-from agentbetta.settings import InMemorySecretStore, ModelProfile, ProviderProfile, SettingsStore
+from agentbetta.settings import (
+    AppSettings,
+    InMemorySecretStore,
+    ModelProfile,
+    ProviderProfile,
+    SettingsStore,
+)
 
 
 class _MarkerProvider(BaseProvider):
@@ -115,6 +121,39 @@ def test_model_choices_include_provider_defaults(tmp_path):
     cloud.enabled = False
     uids = [uid for uid, _ in services.model_choices()]
     assert f"{cloud.id}::example-model" not in uids
+
+
+def test_model_choices_hide_orphaned_models(tmp_path):
+    services = _services(tmp_path)
+    provider = ProviderProfile(name="Cloud", type="openai_compatible",
+                               base_url="https://api.example.com/v1", is_cloud=True)
+    services.settings.providers.append(provider)
+    services.settings.models.append(ModelProfile(provider_id=provider.id, model_id="kept"))
+    services.settings.models.append(ModelProfile(provider_id="deleted", model_id="orphan"))
+    uids = [uid for uid, _ in services.model_choices()]
+    assert f"{provider.id}::kept" in uids
+    assert "deleted::orphan" not in uids
+
+
+def test_services_prune_orphans_on_load(tmp_path):
+    store = SettingsStore(tmp_path / "settings.json")
+    store.save(
+        AppSettings(
+            providers=[],
+            models=[ModelProfile(provider_id="gone", model_id="orphan")],
+            tier_map={"0": "gone::orphan"},
+        )
+    )
+    services = AppServices(
+        settings_store=store,
+        secret_store=InMemorySecretStore(),
+        runs_dir=tmp_path / "runs",
+    )
+    assert services.settings.models == []
+    assert services.settings.tier_map == {}
+    persisted = store.load()
+    assert persisted.models == []
+    assert persisted.tier_map == {}
 
 
 def test_services_fake_selection(tmp_path):

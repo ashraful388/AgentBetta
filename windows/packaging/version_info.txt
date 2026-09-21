@@ -3,8 +3,8 @@
 # PyInstaller Windows version resource for AgentBetta.
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(0, 2, 0, 1),
-    prodvers=(0, 2, 0, 1),
+    filevers=(0, 2, 0, 2),
+    prodvers=(0, 2, 0, 2),
     mask=0x3F,
     flags=0x0,
     OS=0x40004,
@@ -18,13 +18,13 @@ VSVersionInfo(
         '040904B0',
         [StringStruct('CompanyName', 'Dr. Md. Ashraful Babu'),
          StringStruct('FileDescription', 'AgentBetta - Adaptive AI Nano-Agent'),
-         StringStruct('FileVersion', '0.2.0-alpha.1'),
+         StringStruct('FileVersion', '0.2.0-alpha.2'),
          StringStruct('InternalName', 'AgentBetta'),
          StringStruct('LegalCopyright', 'Copyright (c) 2026 Dr. Md. Ashraful Babu'),
          StringStruct('LegalTrademarks', 'AgentBetta is a trademark of Dr. Md. Ashraful Babu'),
          StringStruct('OriginalFilename', 'AgentBetta.exe'),
          StringStruct('ProductName', 'AgentBetta'),
-         StringStruct('ProductVersion', '0.2.0-alpha.1')])
+         StringStruct('ProductVersion', '0.2.0-alpha.2')])
     ]),
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
   ]
