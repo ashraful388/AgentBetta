@@ -13,13 +13,14 @@ from agentbetta.platform import filesystem as fs
 from agentbetta.platform import processes as proc
 from agentbetta.tools.guards import requires
 from agentbetta.tools.registry import ToolContext
+from agentbetta.tools.shell import resolve_cwd
 
 
 @requires(policy.PROCESS_LAUNCH)
 def run_executable(*, ctx: ToolContext, executable: str, args: list[str] | None = None,
                    timeout: int = 60, cwd: str | None = None) -> dict[str, Any]:
     arguments = [executable, *(args or [])]
-    workdir = str(fs.canonical_path(cwd)) if cwd else None
+    workdir = resolve_cwd(cwd)
     result = proc.run_command(arguments, timeout=timeout, cwd=workdir)
     result["executable"] = executable
     result["args"] = list(args or [])

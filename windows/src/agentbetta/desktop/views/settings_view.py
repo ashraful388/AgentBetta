@@ -316,6 +316,14 @@ class SettingsView(QWidget):
         for key, profile in PROFILES.items():
             self.permission_profile_combo.addItem(profile.label, key)
         form.addRow("Default profile:", self.permission_profile_combo)
+        self.auto_approve_check = QCheckBox(
+            "Automatically approve high-risk actions (no prompts)"
+        )
+        self.auto_approve_check.setToolTip(
+            "When enabled, high-risk actions (delete, shell, downloads, …) run without "
+            "a prompt for any profile. The Full Computer profile already does this."
+        )
+        form.addRow("Approvals:", self.auto_approve_check)
         layout.addLayout(form)
         self.permissions_view = QTextBrowser()
         layout.addWidget(self.permissions_view)
@@ -457,6 +465,7 @@ class SettingsView(QWidget):
         self.permission_profile_combo.setCurrentIndex(
             max(0, self.permission_profile_combo.findData(general.default_permission_profile))
         )
+        self.auto_approve_check.setChecked(bool(getattr(general, "auto_approve_high_risk", False)))
         self.browser_enabled_check.setChecked(general.browser_enabled)
         self.browser_engine_combo.setCurrentIndex(
             max(0, self.browser_engine_combo.findData(general.browser_engine))
@@ -483,6 +492,7 @@ class SettingsView(QWidget):
         general.default_permission_profile = self.default_profile_combo.currentData()
         general.data_dir = self.data_dir_edit.text().strip() or None
         general.max_run_seconds = self.max_run_spin.value()
+        general.auto_approve_high_risk = self.auto_approve_check.isChecked()
         general.privacy_mode = self.privacy_check.isChecked()
         general.local_only_default = self.local_only_default_check.isChecked()
         general.provider_fallback = self.provider_fallback_check.isChecked()

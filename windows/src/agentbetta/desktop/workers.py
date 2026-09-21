@@ -61,7 +61,12 @@ class RunWorker(QThread):
 
     def run(self) -> None:
         try:
-            approvals = ApprovalService(callback=self._approval_callback)
+            auto_approve_all = self.request.profile == "full" or bool(
+                getattr(self.services.settings.general, "auto_approve_high_risk", False)
+            )
+            approvals = ApprovalService(
+                callback=self._approval_callback, auto_approve_all=auto_approve_all
+            )
             bus = RunEventBus()
             bus.subscribe(lambda event: self.event.emit(event))
             selection = self.request.selection

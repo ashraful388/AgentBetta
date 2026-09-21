@@ -76,6 +76,9 @@ class GeneralSettings:
     default_permission_profile: str = "safe"
     # Whole-run wall-clock limit in seconds; 0 means no limit.
     max_run_seconds: int = 0
+    # When True, high-risk actions run without a prompt for every profile.
+    # (The Full Computer profile always auto-approves.)
+    auto_approve_high_risk: bool = False
     history_limit: int = 500
     launch_behavior: str = "new_task"
     first_run_complete: bool = False

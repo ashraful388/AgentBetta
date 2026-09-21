@@ -41,9 +41,14 @@ class ApprovalService:
     """
 
     def __init__(self, callback: ApprovalCallback | None = None, *,
-                 auto_approve_max_risk: str = "medium") -> None:
+                 auto_approve_max_risk: str = "medium",
+                 auto_approve_all: bool = False) -> None:
         self.callback = callback
         self.auto_approve_max_risk = auto_approve_max_risk
+        # When True (e.g. the Full Computer profile, or the user enabled it in
+        # Settings), every action is approved without a prompt. Decisions are
+        # still recorded in ``history`` for the audit trail.
+        self.auto_approve_all = bool(auto_approve_all)
         self._run_allowed: set[tuple[str, str | None]] = set()
         self._run_denied: set[tuple[str, str | None]] = set()
         self.history: list[dict[str, Any]] = []
@@ -58,6 +63,9 @@ class ApprovalService:
     def request_tool(self, *, tool_name: str, arguments: dict[str, Any],
                      permission: str | None, risk: str, reason: str) -> bool:
         key = self._key(tool_name, permission)
+        if self.auto_approve_all:
+            self.history.append({"tool_name": tool_name, "decision": "auto_all", "risk": risk})
+            return True
         if key in self._run_denied:
             # A denial is a durable user decision for this run: never re-prompt
             # for the same action.
