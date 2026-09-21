@@ -67,6 +67,21 @@ def test_context_block_contains_memory(tmp_path):
     assert "LONG-TERM MEMORY" in block and "AgentBetta" in block
 
 
+def test_context_block_excludes_episodic_memory(tmp_path):
+    # Past task outputs (episodes) must never be auto-injected: doing so makes a
+    # weak model repeat a previous, unrelated answer.
+    mgr = _manager(tmp_path, auto_capture=False)
+    mgr.add("User prefers concise answers", kind="preference")
+    mgr.add(
+        "Completed task: user prefers verbose answers. Result: saved check_prime.py",
+        kind="episode",
+        importance=0.9,
+    )
+    block = mgr.context_block("what does the user prefer", k=5)
+    assert "concise answers" in block
+    assert "check_prime" not in block.lower()
+
+
 def test_max_entries_prunes(tmp_path):
     mgr = _manager(tmp_path, max_entries=2)
     for i in range(5):

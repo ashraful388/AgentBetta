@@ -87,8 +87,18 @@ class MemoryManager:
             self.store.save_all(entries)
         return selected
 
+    # Only semantic memory (durable facts and preferences) is injected into the
+    # task context. Episodic/summary entries are a historical trace and are kept
+    # out of automatic injection: injecting past task outputs biases the model
+    # toward repeating them (a self-reinforcing loop).
+    _INJECTABLE_KINDS = ("fact", "preference")
+
     def context_block(self, query: str, *, k: int | None = None) -> str:
-        results = self.search(query, k=k, touch=True)
+        limit = self.default_k if k is None else max(0, int(k))
+        if limit <= 0:
+            return ""
+        candidates = self.search(query, k=max(limit * 5, 10), touch=True)
+        results = [entry for entry in candidates if entry.kind in self._INJECTABLE_KINDS][:limit]
         if not results:
             return ""
         lines = [
