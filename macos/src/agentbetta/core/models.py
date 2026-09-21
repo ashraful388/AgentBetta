@@ -58,8 +58,10 @@ class AgentConfiguration:
     # Per-model-call timeout (seconds). This is NOT a run limit; a run has no
     # wall-clock cap by default (see RuntimeConfig.max_total_seconds).
     max_seconds: int = 600
-    max_turns: int = 3
-    max_tool_calls: int = 3
+    # Interaction bounds (I). Generous defaults so real multi-step tasks are not
+    # cut off; adaptive mode expands these further when a task needs more.
+    max_turns: int = 25
+    max_tool_calls: int = 40
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
@@ -181,7 +183,7 @@ class RuntimeConfig:
     record_runs: bool = True
     run_dir: str = ".agentbetta/runs"
     privacy_mode: bool = False
-    max_adaptations: int = 3
+    max_adaptations: int = 8
     allow_contraction_proposals: bool = True
     # Wall-clock limit for a whole run in seconds. 0 (the default) means NO time
     # limit: the run continues until it succeeds, is cancelled, or a hard

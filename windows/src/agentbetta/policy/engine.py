@@ -11,9 +11,9 @@ from agentbetta.permissions import policy as perm_policy
 MODEL_MAX=2
 CONTEXT_LADDER=(8_000, 24_000, 64_000)
 TOKEN_LADDER=(2_000, 6_000, 16_000)
-TURN_LADDER=(3, 6, 10)
+TURN_LADDER=(25, 50, 100)
 TIME_LADDER=(600, 1200, 2400)
-TOOLCALL_LADDER=(3, 6, 10, 20)
+TOOLCALL_LADDER=(40, 80, 160, 320)
 MEMORY_LADDER=(3, 6, 12)
 DEFAULT_MEMORY_ITEMS=3
 
@@ -195,7 +195,7 @@ def wholesale_expand(config: AgentConfiguration, features: TaskFeatures,
     tools.update(_global_tools(perms))
     return replace(config, model_tier=MODEL_MAX, context_chars=CONTEXT_LADDER[-1],
                    token_budget=TOKEN_LADDER[-1], max_seconds=TIME_LADDER[-1],
-                   max_turns=TURN_LADDER[-1], max_tool_calls=10,
+                   max_turns=TURN_LADDER[-1], max_tool_calls=TOOLCALL_LADDER[-1],
                    memory_items=max(config.memory_items, 8), tools=tuple(sorted(tools)), permissions=perms)
 
 

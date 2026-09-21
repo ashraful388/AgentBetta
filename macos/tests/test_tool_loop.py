@@ -74,12 +74,15 @@ def test_tool_permission_denied_is_recorded(tmp_path):
 
 
 def test_tool_call_bound_is_enforced_per_attempt(tmp_path):
+    # A provider that always requests a tool must still be bounded (it must not
+    # loop forever), and the bound must be the configuration's max_tool_calls.
     result = AgentBetta(
         _StubProvider("calculator", {"expression": "1+1"}),
         runtime_config=RuntimeConfig(run_dir=str(tmp_path / "runs"), max_adaptations=0),
     ).run("Calculate 1 + 1")
     assert result.attempts == 1
-    assert len(result.tool_results) <= 3
+    assert result.final_configuration.max_tool_calls >= 40
+    assert 0 < len(result.tool_results) <= result.final_configuration.max_tool_calls
 
 
 def test_system_prompt_states_granted_capabilities():

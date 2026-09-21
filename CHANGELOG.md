@@ -1,8 +1,12 @@
 # Changelog
 
-## Unreleased — no task time limit
+## Unreleased — no task time limit, generous interaction bounds
 
 ### Changed
+- **Generous interaction bounds (fixes `Structured failure: tool_limit`).**
+  Real multi-step tasks were stopped after only a few tool calls. Defaults and
+  adaptive ladders raised: `max_tool_calls` 3 → **40** (ladder 40/80/160/320),
+  `max_turns` 3 → **25** (ladder 25/50/100), `max_adaptations` 3 → **8**.
 - **Removed the wall-clock time limit for task execution.** A run is no longer
   aborted by elapsed time (previously a 600 s run cap plus a per-attempt time
   budget that produced `Structured failure: timeout`). A run now continues until
