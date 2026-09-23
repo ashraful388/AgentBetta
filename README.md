@@ -143,16 +143,35 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`SPECIFICATION.md`](SPECIFICATION.
 
 ## Citation
 
-If you use AgentBetta in academic work, please cite it as:
+If you use AgentBetta in academic work, please cite the paper:
 
-> Md. Ashraful Babu. AgentBetta: Verification-driven adaptive configuration of
-> an ai nano-agent. https://github.com/ashraful388/AgentBetta, 2026. Software
-> repository, accessed 19 September 2026.
+> Md. Ashraful Babu. AgentBetta: Verification-Driven Adaptive Configuration of
+> an AI Nano-Agent through Selective Expansion and Verified Contraction. arXiv
+> preprint arXiv:2609.23512 [cs.AI], 2026.
+> https://arxiv.org/abs/2609.23512
 
 BibTeX:
 
 ```bibtex
 @misc{babu2026agentbetta,
+  title={AgentBetta: Verification-Driven Adaptive Configuration of an AI Nano-Agent through Selective Expansion and Verified Contraction},
+  author={Md. Ashraful Babu},
+  year={2026},
+  eprint={2609.23512},
+  archivePrefix={arXiv},
+  primaryClass={cs.AI},
+  url={https://arxiv.org/abs/2609.23512},
+}
+```
+
+To cite the software repository itself:
+
+> Md. Ashraful Babu. AgentBetta: Verification-driven adaptive configuration of
+> an ai nano-agent. https://github.com/ashraful388/AgentBetta, 2026. Software
+> repository, accessed 19 September 2026.
+
+```bibtex
+@misc{babu2026agentbetta-software,
   author       = {Babu, Md. Ashraful},
   title        = {{AgentBetta}: Verification-Driven Adaptive Configuration of an AI Nano-Agent},
   year         = {2026},

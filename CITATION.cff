@@ -24,3 +24,11 @@ authors:
     affiliation: "Department of Physical Sciences, Independent University, Bangladesh"
     city: Dhaka
     country: BD
+preferred-citation:
+  type: article
+  title: "AgentBetta: Verification-Driven Adaptive Configuration of an AI Nano-Agent through Selective Expansion and Verified Contraction"
+  authors:
+    - name: "Md. Ashraful Babu"
+  year: 2026
+  journal: "arXiv preprint arXiv:2609.23512 [cs.AI]"
+  url: "https://arxiv.org/abs/2609.23512"
