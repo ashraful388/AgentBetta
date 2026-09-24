@@ -17,18 +17,21 @@ silently escalates permissions.
     <img src="assets/agentbetta.png" alt="" width="20" height="20" />
     &nbsp;Download for Windows (.exe)
   </a>
-  <span style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #94a3b8;border-radius:10px;font-weight:700;">
-    &nbsp;macOS build coming soon
-  </span>
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-macOS-arm64.dmg" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
+    <img src="assets/agentbetta.png" alt="" width="20" height="20" />
+    &nbsp;Download for macOS alpha.2 (.dmg)
+  </a>
 </p>
 
 <p align="center">
   <a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.3">Windows files (Setup, portable ZIP, checksums) →</a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.2">macOS alpha.2 files (DMG, ZIP, source) →</a>
 </p>
 
 Windows: install with the Setup EXE (no Python required) — see [Windows installation](windows/installation.md).
-macOS: build from source for now; the Mac Studio installer will be added later —
-see [macOS building](macos/building.md).
+macOS alpha.2: open the DMG and drag to Applications; current alpha.3 source is
+available in [`macos/`](../macos).
 
 ## What makes it different
 

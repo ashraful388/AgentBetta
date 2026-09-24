@@ -58,17 +58,22 @@ AgentBetta/
     &nbsp;<b>Download for Windows (.exe)</b>
   </a>
   &nbsp;&nbsp;&nbsp;
-  <span style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #94a3b8;border-radius:10px;font-weight:700;">
-    &nbsp;<b>macOS build coming soon</b>
-  </span>
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-macOS-arm64.dmg">
+    <img src="docs/assets/agentbetta.png" alt="" width="20" height="20" />
+    &nbsp;<b>Download for macOS alpha.2 (.dmg)</b>
+  </a>
 </p>
 
-<p align="center"><a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.3">Windows files (Setup, portable ZIP, checksums) →</a></p>
+<p align="center">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.3">Windows files (Setup, portable ZIP, checksums) →</a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/ashraful388/AgentBetta/releases/tag/v0.2.0-alpha.2">macOS alpha.2 files (DMG, ZIP, source) →</a>
+</p>
 
 - **Windows 10/11 (x64)** — run the Setup EXE. Per-user, **no Python or admin
   required** (SmartScreen may warn on the unsigned alpha: *More info → Run anyway*).
-- **macOS 11+** — the source is available in [`macos/`](macos); the Mac Studio
-  installer will be added after the signed build is supplied.
+- **macOS 11+ (Apple silicon)** — download the verified alpha.2 DMG above; the
+  current alpha.3 source is available in [`macos/`](macos).
 
 ## Quick start
 
