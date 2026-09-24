@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from PySide6.QtCore import Signal, QThread
+from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -18,7 +18,7 @@ from PySide6.QtWidgets import (
 
 from agentbetta import __version__
 from agentbetta.desktop.widgets.ui import Card, badge, muted
-from agentbetta.updates import can_self_update
+from agentbetta.updates import can_self_update, is_prerelease, select_asset
 
 
 class DownloadWorker(QThread):
@@ -47,6 +47,8 @@ class UpdateDialog(QDialog):
         self.services = services
         self.info = info
         self.worker: DownloadWorker | None = None
+        self._can_self_update = can_self_update()
+        self._asset = select_asset(info)
         self.setWindowTitle("AgentBetta update")
         self.setMinimumWidth(620)
         self.setMinimumHeight(520)
@@ -60,8 +62,9 @@ class UpdateDialog(QDialog):
         title.setObjectName("H2")
         header.addWidget(title)
         header.addStretch(1)
-        header.addWidget(badge("pre-release" if info.prerelease else "stable",
-                               "warning" if info.prerelease else "info"))
+        prerelease = info.prerelease or is_prerelease(info.version)
+        header.addWidget(badge("pre-release" if prerelease else "stable",
+                               "warning" if prerelease else "info"))
         layout.addLayout(header)
 
         layout.addWidget(muted(
@@ -79,10 +82,10 @@ class UpdateDialog(QDialog):
         notes_card.add(notes)
         layout.addWidget(notes_card, 1)
 
-        if not can_self_update():
+        if not self._can_self_update:
             layout.addWidget(muted(
-                "You are running from source, so AgentBetta cannot replace itself. "
-                "Use “Open release page” to download the new build."
+                "You are running from source. Download and install the release, "
+                "then restart AgentBetta."
             ))
 
         self.progress = QProgressBar()
@@ -90,6 +93,8 @@ class UpdateDialog(QDialog):
         self.progress.setVisible(False)
         layout.addWidget(self.progress)
         self.status = muted("")
+        if self._asset is None:
+            self.status.setText("This release has no installer for this platform and CPU.")
         layout.addWidget(self.status)
 
         buttons = QHBoxLayout()
@@ -97,10 +102,14 @@ class UpdateDialog(QDialog):
         self.later_button.setObjectName("Ghost")
         self.page_button = QPushButton("Open release page")
         self.page_button.setObjectName("Ghost")
+        self.page_button.setEnabled(bool(info.page_url))
         self.update_button = QPushButton("Update now")
         self.update_button.setObjectName("Primary")
-        if not can_self_update():
+        if self._asset is None:
+            self.update_button.setText("Installer unavailable")
             self.update_button.setEnabled(False)
+        elif not self._can_self_update:
+            self.update_button.setText("Download & install")
         self.later_button.clicked.connect(self.reject)
         self.page_button.clicked.connect(self._open_page)
         self.update_button.clicked.connect(self._start_download)
@@ -112,8 +121,8 @@ class UpdateDialog(QDialog):
 
     # -- actions ----------------------------------------------------------
     def _open_page(self) -> None:
-        from PySide6.QtGui import QDesktopServices
         from PySide6.QtCore import QUrl
+        from PySide6.QtGui import QDesktopServices
 
         if self.info.page_url:
             QDesktopServices.openUrl(QUrl(self.info.page_url))
@@ -147,10 +156,10 @@ class UpdateDialog(QDialog):
         self.progress.setRange(0, 100)
         self.progress.setValue(100)
         self.status.setText(message)
-        if can_self_update():
+        if self._can_self_update:
             QApplication.instance().quit()
 
     def _on_failed(self, message: str) -> None:
         self.progress.setVisible(False)
-        self.update_button.setEnabled(True)
+        self.update_button.setEnabled(self._asset is not None)
         self.status.setText(f"Update failed: {message}")

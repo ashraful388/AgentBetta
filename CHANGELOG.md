@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0-alpha.3 — 2026-09-25
+
+### Fixed
+- **GitHub update source.** The updater now uses `ashraful388/AgentBetta` and
+  migrates the previous repository value from existing settings.
+- **Update availability and installation.** The header and Settings checks now
+  share one request, highlight available releases, retry visibly after failures,
+  and open the update dialog from the first click. Source runs can download and
+  launch the installer.
+- **Release compatibility.** Prerelease versions use semantic ordering across
+  paginated releases, platform/CPU assets are validated, and split SHA-256
+  manifests are merged before installation.
+
 ## 0.2.0-alpha.2 — 2026-09-22
 
 ### Added

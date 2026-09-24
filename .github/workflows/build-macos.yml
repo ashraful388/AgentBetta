@@ -1,13 +1,9 @@
 name: Build macOS
 
-# Builds the AgentBetta .app / .zip / .dmg from the macos/ folder for Apple
-# silicon and Intel. On a v* tag it publishes a GitHub Release.
+# Builds the AgentBetta .app / .zip / .dmg from the macos/ folder for Apple silicon and Intel.
 
 on:
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
 
 permissions:
   contents: write
@@ -61,7 +57,7 @@ jobs:
           path: |
             macos/release/macos/**/*.zip
             macos/release/macos/**/*.dmg
-            macos/release/macos/**/SHA256SUMS.txt
+            macos/release/macos/**/SHA256SUMS-macOS-*.txt
 
   release:
     name: Publish release
@@ -81,3 +77,4 @@ jobs:
           files: artifacts/**/*
           fail_on_unmatched_files: false
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-dev') }}

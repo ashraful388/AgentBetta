@@ -31,5 +31,5 @@ invariants.
 
 ## Level of assurance
 
-This is a `0.2.0-alpha.2` desktop alpha. Do not use it for high-impact
+This is a `0.2.0-alpha.3` desktop alpha. Do not use it for high-impact
 autonomous actions. The installed EXE is unsigned.

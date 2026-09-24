@@ -36,10 +36,10 @@ code-signs/notarizes, smoke-launches the bundle, and produces the artifacts.
 ## Outputs
 
 ```text
-macos/release/macos/0.2.0-alpha.2/
-├── AgentBetta-0.2.0-alpha.2-macOS-<arch>.zip
-├── AgentBetta-0.2.0-alpha.2-macOS-<arch>.dmg
-└── SHA256SUMS.txt
+macos/release/macos/0.2.0-alpha.3/
+├── AgentBetta-0.2.0-alpha.3-macOS-<arch>.zip
+├── AgentBetta-0.2.0-alpha.3-macOS-<arch>.dmg
+└── SHA256SUMS-macOS-<arch>.txt
 ```
 
 ## Code signing / notarization (optional)
@@ -58,5 +58,6 @@ python -m pytest
 
 ## Continuous integration
 
-`.github/workflows/build-macos.yml` builds **arm64** and **x86_64** and (on a
-`v*` tag) publishes a GitHub Release. See [Updates](../updates.md).
+`.github/workflows/build-macos.yml` can build **arm64** and **x86_64** manually.
+Automatic tag publishing remains disabled until the supplied Mac Studio build is
+ready for release. See [Updates](../updates.md).

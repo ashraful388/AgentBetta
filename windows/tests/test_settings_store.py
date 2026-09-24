@@ -9,13 +9,37 @@ from agentbetta.settings import (
     SettingsStore,
     assert_no_secret_values,
 )
+from agentbetta.settings.models import DEFAULT_UPDATE_REPO
 
 
 def test_missing_file_returns_defaults(tmp_path):
     store = SettingsStore(tmp_path / "settings.json")
     settings = store.load()
     assert settings.general.default_mode == "adaptive"
+    assert settings.general.update_repo == DEFAULT_UPDATE_REPO
+    assert settings.general.update_channel == "prerelease"
     assert settings.providers == []
+
+
+def test_legacy_update_repo_is_migrated(tmp_path):
+    path = tmp_path / "settings.json"
+    path.write_text(
+        json.dumps({"general": {"update_repo": "ashrafulbabu/AgentBetta"}}),
+        encoding="utf-8",
+    )
+    settings = SettingsStore(path).load()
+    assert settings.general.update_repo == DEFAULT_UPDATE_REPO
+    assert settings.general.update_channel == "prerelease"
+
+
+def test_null_update_repo_uses_default(tmp_path):
+    path = tmp_path / "settings.json"
+    path.write_text(
+        json.dumps({"general": {"update_repo": None}}),
+        encoding="utf-8",
+    )
+    settings = SettingsStore(path).load()
+    assert settings.general.update_repo == DEFAULT_UPDATE_REPO
 
 
 def test_roundtrip_persists(tmp_path):

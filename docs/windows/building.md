@@ -35,15 +35,15 @@ The script:
 3. builds the one-directory bundle with **PyInstaller** (`agentbetta.spec`),
 4. creates the portable ZIP,
 5. builds the installer with **Inno Setup** (`packaging\agentbetta.iss`),
-6. writes `SHA256SUMS.txt`.
+6. writes `SHA256SUMS-Windows.txt`.
 
 ## Outputs
 
 ```text
-windows\release\windows\0.2.0-alpha.2\
-├── AgentBetta-0.2.0-alpha.2-Windows-x64-Setup.exe
-├── AgentBetta-0.2.0-alpha.2-Windows-x64-Portable.zip
-└── SHA256SUMS.txt
+windows\release\windows\0.2.0-alpha.3\
+├── AgentBetta-0.2.0-alpha.3-Windows-x64-Setup.exe
+├── AgentBetta-0.2.0-alpha.3-Windows-x64-Portable.zip
+└── SHA256SUMS-Windows.txt
 ```
 
 ## Test only

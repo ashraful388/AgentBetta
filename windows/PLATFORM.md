@@ -16,12 +16,12 @@ pip install pillow
 powershell -ExecutionPolicy Bypass -File scripts\build_windows.ps1
 ```
 
-Outputs in `release\windows\0.2.0-alpha.2\`:
+Outputs in `release\windows\0.2.0-alpha.3\`:
 
 ```text
-AgentBetta-0.2.0-alpha.2-Windows-x64-Setup.exe
-AgentBetta-0.2.0-alpha.2-Windows-x64-Portable.zip
-SHA256SUMS.txt
+AgentBetta-0.2.0-alpha.3-Windows-x64-Setup.exe
+AgentBetta-0.2.0-alpha.3-Windows-x64-Portable.zip
+SHA256SUMS-Windows.txt
 ```
 
 - PyInstaller spec: `agentbetta.spec` (one-directory, `console=False`)

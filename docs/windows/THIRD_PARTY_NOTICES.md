@@ -1,4 +1,4 @@
-# Third-Party Notices — AgentBetta 0.2.0-alpha.2
+# Third-Party Notices — AgentBetta 0.2.0-alpha.3
 
 AgentBetta's own source code is licensed under the **MIT License**
 (Copyright (c) 2026 Dr. Md. Ashraful Babu; see `LICENSE`). This document covers

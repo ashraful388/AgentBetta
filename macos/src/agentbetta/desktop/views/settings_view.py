@@ -6,14 +6,13 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
     QDialogButtonBox,
     QFormLayout,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -29,13 +28,13 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from agentbetta import __version__
 from agentbetta.desktop.guide import USER_GUIDE
 from agentbetta.desktop.services import AppServices
 from agentbetta.desktop.workers import CallWorker
 from agentbetta.permissions import PROFILES, inspect_profiles
 from agentbetta.platform import paths
 from agentbetta.settings import ModelProfile, ProviderProfile, preset, profile_from_preset
-from agentbetta import __version__
 
 
 class ProviderDialog(QDialog):
@@ -160,6 +159,7 @@ class ProviderDialog(QDialog):
 
 class SettingsView(QWidget):
     settingsChanged = Signal()
+    updateCheckRequested = Signal()
 
     def __init__(self, services: AppServices, parent: Any = None) -> None:
         super().__init__(parent)
@@ -261,13 +261,13 @@ class SettingsView(QWidget):
         self.update_repo_edit.setPlaceholderText("owner/repo on GitHub, e.g. yourname/AgentBetta")
         self.update_status = QLabel("")
         self.update_status.setObjectName("Muted")
-        check_now = QPushButton("Check for updates now")
-        check_now.setObjectName("Ghost")
-        check_now.clicked.connect(self.check_updates_now)
+        self.update_check_button = QPushButton("Check for updates now")
+        self.update_check_button.setObjectName("Ghost")
+        self.update_check_button.clicked.connect(self.check_updates_now)
         form.addRow("Updates:", self.auto_update_check)
         form.addRow("Update channel:", self.update_channel_combo)
         form.addRow("Update source:", self.update_repo_edit)
-        form.addRow("", check_now)
+        form.addRow("", self.update_check_button)
         form.addRow("", self.update_status)
         return widget
 
@@ -557,21 +557,27 @@ class SettingsView(QWidget):
 
     # -- updates ----------------------------------------------------------
     def check_updates_now(self) -> None:
+        general = self.services.settings.general
+        repo = self.update_repo_edit.text().strip()
+        if not repo or "/" not in repo:
+            self.update_status.setText("Enter a GitHub update source in owner/repo format.")
+            return
+        general.auto_check_updates = self.auto_update_check.isChecked()
+        general.update_channel = self.update_channel_combo.currentData()
+        general.update_repo = repo
+        self.services.save()
+        self.update_check_button.setEnabled(False)
         self.update_status.setText("Checking for updates…")
+        self.updateCheckRequested.emit()
 
-        def on_done(info: Any) -> None:
-            if info is None:
-                self.update_status.setText(f"You are running the latest version ({__version__}).")
-                return
+    def finish_update_check(self, info: Any, error: str = "") -> None:
+        self.update_check_button.setEnabled(True)
+        if error:
+            self.update_status.setText(f"Check failed: {error}")
+        elif info is None:
+            self.update_status.setText(f"You are running the latest version ({__version__}).")
+        else:
             self.update_status.setText(f"Update available: {info.version}")
-            from agentbetta.desktop.widgets.update_dialog import UpdateDialog
-
-            UpdateDialog(self.services, info, self).exec()
-
-        def on_error(message: str) -> None:
-            self.update_status.setText(f"Check failed: {message}")
-
-        self._start_worker(self.services.check_for_updates, on_done, on_error)
 
     # -- providers --------------------------------------------------------
     def refresh_provider_table(self) -> None:

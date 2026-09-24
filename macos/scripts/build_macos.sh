@@ -10,7 +10,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
 PY="${PYTHON:-python3}"
-VERSION="0.2.0-alpha.2"
+VERSION="0.2.0-alpha.3"
 ARCH="$(uname -m)"
 RELEASE_DIR="$ROOT/release/macos/$VERSION"
 APP="$ROOT/dist/AgentBetta.app"
@@ -42,7 +42,7 @@ else
 fi
 
 echo "== SHA-256 hashes =="
-( cd "$RELEASE_DIR" && shasum -a 256 AgentBetta-*.zip AgentBetta-*.dmg > SHA256SUMS.txt )
+( cd "$RELEASE_DIR" && shasum -a 256 AgentBetta-*.zip AgentBetta-*.dmg > "SHA256SUMS-macOS-$ARCH.txt" )
 
 echo "Release artifacts:"
 ls -lh "$RELEASE_DIR"

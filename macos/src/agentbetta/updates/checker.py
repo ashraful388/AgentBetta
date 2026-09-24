@@ -7,13 +7,14 @@ import platform as _platform
 import sys
 import urllib.error
 import urllib.request
+from functools import cmp_to_key
 from typing import Any
 
 from agentbetta.updates.models import ReleaseAsset, UpdateInfo
-from agentbetta.updates.version import is_newer
+from agentbetta.updates.version import compare_versions, is_newer, is_prerelease
 
 GITHUB_API = "https://api.github.com"
-DEFAULT_UPDATE_REPO = "ashrafulbabu/AgentBetta"
+DEFAULT_UPDATE_REPO = "ashraful388/AgentBetta"
 _USER_AGENT = "AgentBetta-Updater"
 _TIMEOUT = 20
 
@@ -43,6 +44,10 @@ def _get(url: str, timeout: int = _TIMEOUT) -> Any:
             raise UpdateError(
                 "No releases found for the configured update source. "
                 "Check Settings ▸ Updates."
+            ) from exc
+        if exc.code in (403, 429):
+            raise UpdateError(
+                "GitHub's update API rate limit was reached. Try again later."
             ) from exc
         raise UpdateError(f"Update server returned HTTP {exc.code}.") from exc
     except urllib.error.URLError as exc:
@@ -75,17 +80,33 @@ def fetch_latest_release(repo: str, *, channel: str = "stable") -> UpdateInfo:
     if not repo or "/" not in repo:
         raise UpdateError("No update source configured (expected 'owner/repo').")
     if channel == "prerelease":
-        releases = _get(f"{GITHUB_API}/repos/{repo}/releases?per_page=20")
-        if not isinstance(releases, list) or not releases:
-            raise UpdateError("No releases found for the configured update source.")
-        candidates = [_to_info(release) for release in releases if not release.get("draft")]
+        candidates: list[UpdateInfo] = []
+        page = 1
+        while True:
+            releases = _get(
+                f"{GITHUB_API}/repos/{repo}/releases?per_page=100&page={page}"
+            )
+            if not isinstance(releases, list):
+                raise UpdateError("Unexpected update response.")
+            candidates.extend(
+                _to_info(release) for release in releases if not release.get("draft")
+            )
+            if len(releases) < 100:
+                break
+            page += 1
         if not candidates:
             raise UpdateError("No published releases found.")
-        return max(candidates, key=lambda info: info.version)
+        return max(
+            candidates,
+            key=cmp_to_key(lambda left, right: compare_versions(left.version, right.version)),
+        )
     data = _get(f"{GITHUB_API}/repos/{repo}/releases/latest")
     if not isinstance(data, dict):
         raise UpdateError("Unexpected update response.")
-    return _to_info(data)
+    info = _to_info(data)
+    if bool(data.get("prerelease")) or is_prerelease(info.version):
+        raise UpdateError("The latest GitHub release is a pre-release, not a stable release.")
+    return info
 
 
 def select_asset(info: UpdateInfo, platform: str | None = None) -> ReleaseAsset | None:
@@ -101,26 +122,30 @@ def select_asset(info: UpdateInfo, platform: str | None = None) -> ReleaseAsset 
             if name.endswith(".exe"):
                 return asset
         return None
-    # macOS: prefer a disk image for the running architecture, then any dmg,
-    # then the zipped .app bundle.
     machine = _platform.machine().lower()
-    if machine in ("aarch64",):
+    if machine == "aarch64":
         machine = "arm64"
-    if machine in ("amd64",):
+    if machine == "amd64":
         machine = "x86_64"
     dmgs = [(asset, name) for asset, name in names if name.endswith(".dmg")]
-    for asset, name in dmgs:
-        if machine and machine in name:
-            return asset
-    if dmgs:
-        return dmgs[0][0]
-    for asset, name in names:
-        if name.endswith(".zip") and "portable" not in name:
+    zips = [
+        (asset, name)
+        for asset, name in names
+        if name.endswith(".zip") and "portable" not in name
+    ]
+    for candidates in (dmgs, zips):
+        for asset, name in candidates:
             if machine and machine in name:
                 return asset
-    for asset, name in names:
-        if name.endswith(".zip") and "portable" not in name:
-            return asset
+        for asset, name in candidates:
+            if "universal" in name:
+                return asset
+        if machine and any(
+            "arm64" in name or "x86_64" in name for _, name in candidates
+        ):
+            continue
+        if candidates:
+            return candidates[0][0]
     return None
 
 

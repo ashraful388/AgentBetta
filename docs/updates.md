@@ -26,8 +26,8 @@ AgentBetta updates itself from **GitHub Releases**.
    ```
 3. The GitHub Actions workflow builds the installers and **publishes a Release**
    with the assets the updater downloads:
-   - Windows: `AgentBetta-<version>-Windows-x64-Setup.exe`, `...-Portable.zip`, `SHA256SUMS.txt`
-   - macOS: `AgentBetta-<version>-macOS-<arch>.zip` / `.dmg`, `SHA256SUMS.txt`
+   - Windows: `AgentBetta-<version>-Windows-x64-Setup.exe`, `...-Portable.zip`, `SHA256SUMS-Windows.txt`
+   - macOS: `AgentBetta-<version>-macOS-<arch>.zip` / `.dmg`, `SHA256SUMS-macOS-<arch>.txt`
 4. Mark a release **pre-release** to require the *Pre-release* channel.
 
 !!! note

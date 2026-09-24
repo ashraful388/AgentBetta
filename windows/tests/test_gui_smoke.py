@@ -1,4 +1,5 @@
 import os
+import threading
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -56,6 +57,113 @@ def test_main_window_builds(qapp, tmp_path):
     assert window.inspector is not None
 
 
+def test_update_available_highlights_header(qapp, tmp_path):
+    from agentbetta.desktop.main_window import MainWindow
+    from agentbetta.updates import UpdateInfo
+
+    services = _services(tmp_path)
+    services.settings.general.auto_check_updates = False
+    window = MainWindow(services)
+    info = UpdateInfo(version="9.9.9", tag="v9.9.9")
+    window._on_update_checked(info, silent=True)
+    assert window.update_button.text() == "Update 9.9.9"
+    assert window.update_button.objectName() == "Primary"
+    assert window._pending_update is info
+
+
+def test_first_update_click_opens_available_release(qapp, tmp_path, monkeypatch):
+    from agentbetta.desktop.main_window import MainWindow
+    from agentbetta.updates import UpdateInfo
+
+    services = _services(tmp_path)
+    services.settings.general.auto_check_updates = False
+    window = MainWindow(services)
+    info = UpdateInfo(version="9.9.9", tag="v9.9.9")
+    shown = []
+
+    def check(**kwargs):
+        window._on_update_checked(info, silent=kwargs["silent"])
+
+    monkeypatch.setattr(window, "_check_updates", check)
+    monkeypatch.setattr(window, "_show_update_dialog", shown.append)
+    window._open_update_dialog()
+    assert shown == [info]
+
+
+def test_pending_update_is_rechecked_after_source_change(qapp, tmp_path, monkeypatch):
+    from agentbetta.desktop.main_window import MainWindow
+    from agentbetta.updates import UpdateInfo
+
+    services = _services(tmp_path)
+    services.settings.general.auto_check_updates = False
+    window = MainWindow(services)
+    window._on_update_checked(UpdateInfo(version="9.9.9", tag="v9.9.9"), silent=True)
+    services.settings.general.update_repo = "other/AgentBetta"
+    checks = []
+    monkeypatch.setattr(window, "_check_updates", lambda **kwargs: checks.append(kwargs))
+    window._open_update_dialog()
+    assert window._pending_update is None
+    assert window._open_dialog_after_check is True
+    assert checks == [{"silent": False}]
+
+
+def test_stale_in_flight_result_is_discarded(qapp, tmp_path, monkeypatch):
+    from agentbetta.desktop.main_window import MainWindow
+    from agentbetta.updates import UpdateInfo
+
+    services = _services(tmp_path)
+    services.settings.general.auto_check_updates = False
+    window = MainWindow(services)
+    window._open_dialog_after_check = True
+    checks = []
+    monkeypatch.setattr(window, "_check_updates", lambda **kwargs: checks.append(kwargs))
+    window._on_update_checked(
+        UpdateInfo(version="9.9.9", tag="v9.9.9"),
+        silent=False,
+        context=("old/AgentBetta", "stable"),
+    )
+    assert window._pending_update is None
+    assert window.update_button.text() == "Updates"
+    assert checks == [{"silent": False}]
+
+
+def test_overlapping_settings_and_header_checks_share_result(qapp, tmp_path, monkeypatch):
+    from agentbetta.desktop.main_window import MainWindow
+    from agentbetta.updates import UpdateInfo
+
+    services = _services(tmp_path)
+    services.settings.general.auto_check_updates = False
+    window = MainWindow(services)
+    started = threading.Event()
+    release = threading.Event()
+    calls = []
+    shown = []
+    info = UpdateInfo(version="9.9.9", tag="v9.9.9")
+
+    def check_for_updates(repo, channel):
+        calls.append((repo, channel))
+        started.set()
+        assert release.wait(5000)
+        return info
+
+    monkeypatch.setattr(services, "check_for_updates", check_for_updates)
+    monkeypatch.setattr(window, "_show_update_dialog", shown.append)
+    window.settings_view.check_updates_now()
+    assert started.wait(2000)
+    worker = window._update_worker
+    window._open_update_dialog()
+    assert window._update_worker is worker
+    release.set()
+    assert worker.wait(5000)
+    for _ in range(20):
+        qapp.processEvents()
+    assert calls == [("ashraful388/AgentBetta", "prerelease")]
+    assert shown == [info]
+    assert window._open_dialog_after_check is False
+    assert window._settings_update_check_pending is False
+    assert window.settings_view.update_check_button.isEnabled()
+
+
 def test_gui_run_offline_completes(qapp, tmp_path):
     from agentbetta.desktop.main_window import MainWindow
 
@@ -78,6 +186,40 @@ def test_settings_view_renders_profiles(qapp, tmp_path):
     view = SettingsView(_services(tmp_path))
     assert view.tabs.count() >= 8
     assert "hard denied" in view.permissions_view.toPlainText().lower()
+
+
+def test_settings_update_check_saves_current_fields(qapp, tmp_path):
+    from agentbetta.desktop.views.settings_view import SettingsView
+
+    services = _services(tmp_path)
+    view = SettingsView(services)
+    requested = []
+    view.updateCheckRequested.connect(lambda: requested.append(True))
+    view.update_repo_edit.setText("example/AgentBetta")
+    view.update_channel_combo.setCurrentIndex(view.update_channel_combo.findData("prerelease"))
+    view.check_updates_now()
+    assert requested == [True]
+    assert not view.update_check_button.isEnabled()
+    assert services.settings_store.load().general.update_repo == "example/AgentBetta"
+    view.finish_update_check(None)
+    assert view.update_check_button.isEnabled()
+
+
+def test_source_update_dialog_has_download_action(qapp, monkeypatch):
+    from agentbetta.desktop.widgets import update_dialog
+    from agentbetta.updates import ReleaseAsset, UpdateInfo
+
+    info = UpdateInfo(
+        version="9.9.9",
+        tag="v9.9.9",
+        page_url="https://github.com/ashraful388/AgentBetta/releases/tag/v9.9.9",
+        assets=[ReleaseAsset("AgentBetta-Setup.exe", "https://example.invalid/setup.exe")],
+    )
+    monkeypatch.setattr(update_dialog, "can_self_update", lambda: False)
+    monkeypatch.setattr(update_dialog, "select_asset", lambda value: value.assets[0])
+    dialog = update_dialog.UpdateDialog(object(), info)
+    assert dialog.update_button.isEnabled()
+    assert dialog.update_button.text() == "Download & install"
 
 
 def test_theme_light_and_dark_differ(qapp):

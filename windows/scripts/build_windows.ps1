@@ -5,7 +5,7 @@ $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $python = Join-Path $root ".venv\Scripts\python.exe"
 $pyinstaller = Join-Path $root ".venv\Scripts\pyinstaller.exe"
-$version = "0.2.0-alpha.2"
+$version = "0.2.0-alpha.3"
 $releaseDir = Join-Path $root "release\windows\$version"
 
 # Locate the Inno Setup compiler in common install locations or on PATH.
@@ -52,8 +52,8 @@ if ($iscc) {
 }
 
 Write-Host "== SHA-256 hashes =="
-$sums = Join-Path $releaseDir "SHA256SUMS.txt"
-Get-ChildItem -File $releaseDir | Where-Object { $_.Name -ne "SHA256SUMS.txt" } | ForEach-Object {
+$sums = Join-Path $releaseDir "SHA256SUMS-Windows.txt"
+Get-ChildItem -File $releaseDir | Where-Object { $_.Name -notlike "SHA256SUMS*.txt" } | ForEach-Object {
     $hash = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLower()
     "$hash  $($_.Name)"
 } | Set-Content -LiteralPath $sums -Encoding ascii

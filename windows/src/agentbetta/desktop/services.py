@@ -353,13 +353,19 @@ class AppServices:
         return manager.clear()
 
     # -- updates ----------------------------------------------------------
-    def check_for_updates(self) -> Any:
+    def check_for_updates(
+        self,
+        repo: str | None = None,
+        channel: str | None = None,
+    ) -> Any:
         from agentbetta import __version__
         from agentbetta.updates import check_for_update
 
         general = self.settings.general
         info = check_for_update(
-            __version__, general.update_repo, channel=general.update_channel
+            __version__,
+            repo if repo is not None else general.update_repo,
+            channel=channel if channel is not None else general.update_channel,
         )
         return info
 
@@ -377,7 +383,9 @@ class AppServices:
         from agentbetta.updates import install_update, verify_checksum
 
         expected = (checksums or {}).get(path.name.lower())
-        if expected and not verify_checksum(path, expected):
+        if not expected:
+            raise RuntimeError("Downloaded update has no matching SHA-256 checksum; aborting.")
+        if not verify_checksum(path, expected):
             raise RuntimeError("Downloaded update failed its SHA-256 check; aborting.")
         return install_update(path)
 

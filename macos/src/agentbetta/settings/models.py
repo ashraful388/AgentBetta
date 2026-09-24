@@ -14,6 +14,8 @@ from agentbetta.settings.models_catalog import ModelProfile
 from agentbetta.settings.provider_profiles import ProviderProfile
 
 SETTINGS_SCHEMA_VERSION = "1"
+DEFAULT_UPDATE_REPO = "ashraful388/AgentBetta"
+_LEGACY_UPDATE_REPOS = {"ashrafulbabu/agentbetta"}
 
 THEMES = ("system", "light", "dark")
 MODES = ("adaptive", "fixed", "wholesale")
@@ -97,16 +99,26 @@ class GeneralSettings:
     memory_embedding_model: str = "nomic-embed-text"
     provider_fallback: bool = True
     auto_check_updates: bool = True
-    update_channel: str = "stable"
-    update_repo: str = "ashrafulbabu/AgentBetta"
+    update_channel: str = "prerelease"
+    update_repo: str = DEFAULT_UPDATE_REPO
     last_update_check: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any] | None) -> "GeneralSettings":
-        return cls(**_filtered(cls, data))
+    def from_dict(cls, data: dict[str, Any] | None) -> GeneralSettings:
+        settings = cls(**_filtered(cls, data))
+        if (
+            not isinstance(settings.update_repo, str)
+            or not settings.update_repo.strip()
+        ):
+            settings.update_repo = DEFAULT_UPDATE_REPO
+        elif settings.update_repo.strip().casefold() in _LEGACY_UPDATE_REPOS:
+            settings.update_repo = DEFAULT_UPDATE_REPO
+            if settings.update_channel == "stable":
+                settings.update_channel = "prerelease"
+        return settings
 
 
 @dataclass
@@ -127,7 +139,7 @@ class AppSettings:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any] | None) -> "AppSettings":
+    def from_dict(cls, data: dict[str, Any] | None) -> AppSettings:
         data = data or {}
         providers = [ProviderProfile.from_dict(p) for p in (data.get("providers") or [])]
         models = [ModelProfile.from_dict(m) for m in (data.get("models") or [])]

@@ -21,7 +21,7 @@ from agentbetta.updates.installer import (
     verify_checksum,
 )
 from agentbetta.updates.models import ReleaseAsset, UpdateInfo
-from agentbetta.updates.version import compare_versions, is_newer, parse_version
+from agentbetta.updates.version import compare_versions, is_newer, is_prerelease, parse_version
 
 __all__ = [
     "DEFAULT_UPDATE_REPO",
@@ -38,6 +38,7 @@ __all__ = [
     "fetch_latest_release",
     "install_update",
     "is_newer",
+    "is_prerelease",
     "parse_sha256sums",
     "parse_version",
     "select_asset",

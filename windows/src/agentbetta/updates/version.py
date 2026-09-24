@@ -25,12 +25,16 @@ def parse_version(text: str) -> tuple[tuple[int, ...], tuple[int, int]]:
     match = _NUM_RE.search(value)
     numbers = tuple(int(part) for part in match.group(1).split(".")) if match else (0,)
     rest = value[match.end():] if match else value
-    pre = _PRE_RE.search(rest)
+    pre = _PRE_RE.search(rest.split("+", 1)[0])
     if pre:
         rank = _PRE_RANK.get(pre.group(1).lower(), 1)
         number = int(pre.group(2) or 0)
         return numbers, (rank, number)
     return numbers, (_FINAL_RANK, 0)
+
+
+def is_prerelease(text: str) -> bool:
+    return parse_version(text)[1][0] != _FINAL_RANK
 
 
 def _pad(a: tuple[int, ...], b: tuple[int, ...]) -> tuple[tuple[int, ...], tuple[int, ...]]:

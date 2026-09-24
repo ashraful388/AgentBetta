@@ -57,7 +57,10 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         self.services = services
         self._pending_update: Any = None
+        self._pending_update_context: tuple[str, str] | None = None
         self._update_worker: Any = None
+        self._open_dialog_after_check = False
+        self._settings_update_check_pending = False
         self.setWindowTitle("AgentBetta")
         self.setWindowIcon(app_icon())
         self.resize(1380, 900)
@@ -122,19 +125,49 @@ class MainWindow(QMainWindow):
             return
         self.update_button.setText("Checking…")
         self.update_button.setEnabled(False)
-        worker = CallWorker(self.services.check_for_updates, self)
+        self.statusBar().showMessage("Checking for AgentBetta updates…")
+        context = self._current_update_context()
+
+        def check() -> tuple[tuple[str, str], Any]:
+            return context, self.services.check_for_updates(*context)
+
+        worker = CallWorker(check, self)
         self._update_worker = worker
-        worker.done.connect(lambda info: self._on_update_checked(info, silent=silent))
-        worker.failed.connect(lambda message: self._on_update_failed(message, silent=silent))
+        worker.done.connect(
+            lambda result: self._on_update_checked(
+                result[1], silent=silent, context=result[0]
+            )
+        )
+        worker.failed.connect(
+            lambda message: self._on_update_failed(
+                message, silent=silent, context=context
+            )
+        )
         worker.start()
 
-    def _on_update_checked(self, info: Any, *, silent: bool = False) -> None:
+    def _on_update_checked(
+        self,
+        info: Any,
+        *,
+        silent: bool = False,
+        context: tuple[str, str] | None = None,
+    ) -> None:
+        if self._discard_stale_update(context, silent=silent):
+            return
+        open_dialog = self._open_dialog_after_check
+        settings_requested = self._settings_update_check_pending
+        self._open_dialog_after_check = False
+        self._settings_update_check_pending = False
+        if settings_requested:
+            self.settings_view.finish_update_check(info)
         self.update_button.setEnabled(True)
         self._pending_update = info
+        self._pending_update_context = self._current_update_context() if info else None
         if info is not None:
             self.update_button.setText(f"Update {info.version}")
             self.update_button.setObjectName("Primary")
             self.update_button.setIcon(icon("update", current_tokens().on_accent, 18))
+            self.update_button.setToolTip(f"AgentBetta {info.version} is available")
             self._repolish(self.update_button)
             self.statusBar().showMessage(
                 f"Update available: AgentBetta {info.version} — click Update."
@@ -143,29 +176,95 @@ class MainWindow(QMainWindow):
             self.update_button.setText("Updates")
             self.update_button.setObjectName("Ghost")
             self.update_button.setIcon(icon("update", current_tokens().text_muted, 18))
+            self.update_button.setToolTip("Check for updates")
             self._repolish(self.update_button)
-            if not silent:
+            self.statusBar().showMessage(f"AgentBetta {__version__} is up to date.")
+            if not silent or open_dialog:
                 from PySide6.QtWidgets import QMessageBox
 
                 QMessageBox.information(
                     self, "AgentBetta", f"You are running the latest version ({__version__})."
                 )
+        if info is not None and (open_dialog or settings_requested):
+            self._show_update_dialog(info)
 
-    def _on_update_failed(self, message: str, *, silent: bool = False) -> None:
+    def _on_update_failed(
+        self,
+        message: str,
+        *,
+        silent: bool = False,
+        context: tuple[str, str] | None = None,
+    ) -> None:
+        if self._discard_stale_update(context, silent=silent):
+            return
+        open_dialog = self._open_dialog_after_check
+        settings_requested = self._settings_update_check_pending
+        self._open_dialog_after_check = False
+        self._settings_update_check_pending = False
+        if settings_requested:
+            self.settings_view.finish_update_check(None, message)
+        self._pending_update = None
+        self._pending_update_context = None
         self.update_button.setEnabled(True)
-        self.update_button.setText("Updates")
-        if not silent:
+        self.update_button.setText("Retry updates")
+        self.update_button.setObjectName("Primary")
+        self.update_button.setIcon(icon("update", current_tokens().on_accent, 18))
+        self.update_button.setToolTip("Update check failed. Click to retry.")
+        self._repolish(self.update_button)
+        self.statusBar().showMessage(f"Update check failed: {message}")
+        if not silent or open_dialog:
             from PySide6.QtWidgets import QMessageBox
 
             QMessageBox.warning(self, "AgentBetta", f"Update check failed: {message}")
 
+    def _discard_stale_update(
+        self,
+        context: tuple[str, str] | None,
+        *,
+        silent: bool,
+    ) -> bool:
+        if context is None or context == self._current_update_context():
+            return False
+        self.update_button.setEnabled(True)
+        self.update_button.setText("Updates")
+        self.update_button.setObjectName("Ghost")
+        self.update_button.setIcon(icon("update", current_tokens().text_muted, 18))
+        self.update_button.setToolTip("Check for updates")
+        self._repolish(self.update_button)
+        requested = self._open_dialog_after_check or self._settings_update_check_pending
+        if requested:
+            self.statusBar().showMessage("Update settings changed. Checking again…")
+            self._update_worker = None
+            self._check_updates(silent=silent and not self._open_dialog_after_check)
+        else:
+            self.statusBar().showMessage("Update settings changed. Check again when ready.")
+        return True
+
+    def _current_update_context(self) -> tuple[str, str]:
+        general = self.services.settings.general
+        return general.update_repo, general.update_channel
+
     def _open_update_dialog(self) -> None:
+        if (
+            self._pending_update is not None
+            and self._pending_update_context != self._current_update_context()
+        ):
+            self._pending_update = None
+            self._pending_update_context = None
         if self._pending_update is None:
+            self._open_dialog_after_check = True
             self._check_updates(silent=False)
             return
+        self._show_update_dialog(self._pending_update)
+
+    def _on_settings_update_requested(self) -> None:
+        self._settings_update_check_pending = True
+        self._check_updates(silent=True)
+
+    def _show_update_dialog(self, info: Any) -> None:
         from agentbetta.desktop.widgets.update_dialog import UpdateDialog
 
-        UpdateDialog(self.services, self._pending_update, self).exec()
+        UpdateDialog(self.services, info, self).exec()
 
     @staticmethod
     def _repolish(widget: Any) -> None:
@@ -255,6 +354,7 @@ class MainWindow(QMainWindow):
         self.projects_view.useInTaskRequested.connect(self._use_project)
         self.projects_view.openChatRequested.connect(self._open_chat)
         self.settings_view.settingsChanged.connect(self._on_settings_changed)
+        self.settings_view.updateCheckRequested.connect(self._on_settings_update_requested)
         self.memory_view.memoryChanged.connect(self.settings_view.refresh_memory)
 
     # -- navigation -------------------------------------------------------

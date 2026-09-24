@@ -19,12 +19,12 @@ playwright install chromium      # browser fallback runtime
 bash scripts/build_macos.sh
 ```
 
-Outputs in `release/macos/0.2.0-alpha.2/`:
+Outputs in `release/macos/0.2.0-alpha.3/`:
 
 ```text
-AgentBetta-0.2.0-alpha.2-macOS.zip
-AgentBetta-0.2.0-alpha.2-macOS.dmg
-SHA256SUMS.txt
+AgentBetta-0.2.0-alpha.3-macOS-<arch>.zip
+AgentBetta-0.2.0-alpha.3-macOS-<arch>.dmg
+SHA256SUMS-macOS-<arch>.txt
 ```
 
 - PyInstaller spec: `packaging/agentbetta-macos.spec` (`.app` bundle)

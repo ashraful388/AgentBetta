@@ -6,14 +6,13 @@ tools to use it.
 ## 1. Install AgentBetta
 
 <p align="center">
-  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-Windows-x64-Setup.exe" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
+  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.3/AgentBetta-0.2.0-alpha.3-Windows-x64-Setup.exe" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
     <img src="assets/agentbetta.png" alt="" width="20" height="20" />
     &nbsp;Download for Windows (.exe)
   </a>
-  <a href="https://github.com/ashraful388/AgentBetta/releases/download/v0.2.0-alpha.2/AgentBetta-0.2.0-alpha.2-macOS-arm64.dmg" style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #3b82f6;border-radius:10px;text-decoration:none;font-weight:700;">
-    <img src="assets/agentbetta.png" alt="" width="20" height="20" />
-    &nbsp;Download for macOS (.dmg)
-  </a>
+  <span style="display:inline-block;margin:4px;padding:10px 18px;border:1px solid #94a3b8;border-radius:10px;font-weight:700;">
+    &nbsp;macOS build coming soon
+  </span>
 </p>
 
 === "Windows"
@@ -28,12 +27,10 @@ tools to use it.
 
 === "macOS"
 
-    1. Download `AgentBetta-<version>-macOS-<arch>.dmg` (or `.zip`) from the releases page.
-    2. Open the dmg and drag **AgentBetta** into **Applications**.
-    3. First launch: right-click the app → **Open** (the alpha is unsigned).
-    4. If needed: `xattr -dr com.apple.quarantine /Applications/AgentBetta.app`.
-
-    See [macOS installation](macos/installation.md).
+    1. Build from source using the [`macos/`](../macos) tree, or wait for the Mac
+       Studio installer to be added to Releases.
+    2. See [macOS building](macos/building.md) and
+       [installation](macos/installation.md).
 
 ## 2. Choose a model
 

@@ -7,13 +7,12 @@ zipped build via a detached helper script.
 
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 import tempfile
 import urllib.request
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from agentbetta.platform import paths
 from agentbetta.updates.models import ReleaseAsset
@@ -80,15 +79,27 @@ def download_asset(asset: ReleaseAsset, dest_dir: Path | None = None,
 
 
 def download_checksums(info) -> dict[str, str]:
-    asset = info.checksums_asset()
-    if asset is None:
-        return {}
-    request = urllib.request.Request(asset.url, headers={"User-Agent": "AgentBetta-Updater"})
-    try:
-        with urllib.request.urlopen(request, timeout=30) as response:
-            return parse_sha256sums(response.read().decode("utf-8", errors="replace"))
-    except Exception:
-        return {}
+    assets = info.checksums_assets()
+    if not assets:
+        raise InstallError("This release does not include a SHA-256 checksum manifest.")
+    merged: dict[str, str] = {}
+    for asset in assets:
+        request = urllib.request.Request(
+            asset.url, headers={"User-Agent": "AgentBetta-Updater"}
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                checksums = parse_sha256sums(
+                    response.read().decode("utf-8", errors="replace")
+                )
+        except Exception as exc:
+            raise InstallError(
+                f"Could not download {asset.name}: {type(exc).__name__}: {exc}"
+            ) from exc
+        if not checksums:
+            raise InstallError(f"{asset.name} did not contain any valid checksums.")
+        merged.update(checksums)
+    return merged
 
 
 def verify_checksum(path: Path, expected: str | None) -> bool:

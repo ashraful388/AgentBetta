@@ -25,6 +25,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify release version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $expected = "${{ github.ref_name }}".TrimStart([char]"v")
+          $pepExpected = $expected -replace '-alpha\.', 'a'
+          $pyproject = [regex]::Match((Get-Content -Raw pyproject.toml), '(?m)^version = "([^"]+)"$').Groups[1].Value
+          $runtime = [regex]::Match((Get-Content -Raw src/agentbetta/__init__.py), '(?m)^__version__ = "([^"]+)"$').Groups[1].Value
+          $build = [regex]::Match((Get-Content -Raw scripts/build_windows.ps1), '(?m)^\$version = "([^"]+)"$').Groups[1].Value
+          $installer = [regex]::Match((Get-Content -Raw packaging/agentbetta.iss), '(?m)^#define MyAppVersion "([^"]+)"$').Groups[1].Value
+          if ($pyproject -ne $pepExpected -or $runtime -ne $pepExpected -or $build -ne $expected -or $installer -ne $expected) {
+            throw "Version mismatch: tag=$expected pyproject=$pyproject runtime=$runtime build=$build installer=$installer"
+          }
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -57,7 +71,7 @@ jobs:
           path: |
             windows/release/windows/**/*.exe
             windows/release/windows/**/*.zip
-            windows/release/windows/**/SHA256SUMS.txt
+            windows/release/windows/**/SHA256SUMS-Windows.txt
 
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
@@ -66,6 +80,7 @@ jobs:
           files: |
             windows/release/windows/**/AgentBetta-*-Setup.exe
             windows/release/windows/**/AgentBetta-*-Portable.zip
-            windows/release/windows/**/SHA256SUMS.txt
+            windows/release/windows/**/SHA256SUMS-Windows.txt
           fail_on_unmatched_files: false
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-dev') }}

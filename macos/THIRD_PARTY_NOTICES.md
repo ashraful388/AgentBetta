@@ -1,4 +1,4 @@
-# Third-Party Notices — AgentBetta 0.2.0-alpha.2 (macOS)
+# Third-Party Notices — AgentBetta 0.2.0-alpha.3 (macOS)
 
 AgentBetta's own source code is licensed under the **MIT License**
 (Copyright (c) 2026 Dr. Md. Ashraful Babu; see `LICENSE`). This document covers

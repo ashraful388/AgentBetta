@@ -7,16 +7,15 @@ import pytest
 from agentbetta.core.models import PermissionSet
 from agentbetta.permissions import profile_permission_set
 from agentbetta.permissions.policy import BROWSER_READ, FILE_READ
-from agentbetta.platform.windows import paths
+from agentbetta.platform import paths
+from agentbetta.tools import ToolContext
+from agentbetta.tools import browser as browsert
 from agentbetta.tools.browser import (
     BrowserConfig,
     BrowserSession,
     validate_browser_url,
 )
-from agentbetta.tools.web import http_fetch, html_to_text, validate_http_url
-from agentbetta.tools import browser as browsert
-from agentbetta.tools import web as webt
-from agentbetta.tools import ToolContext
+from agentbetta.tools.web import html_to_text, http_fetch, validate_http_url
 
 
 @pytest.fixture(scope="module")
