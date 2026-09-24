@@ -29,12 +29,12 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         shell: pwsh
         run: |
-          $expected = "${{ github.ref_name }}".TrimStart([char]"v")
+          $expected = ("${{ github.ref_name }}").TrimStart([char]"v")
           $pepExpected = $expected -replace '-alpha\.', 'a'
-          $pyproject = [regex]::Match((Get-Content -Raw pyproject.toml), '(?m)^version = "([^"]+)"$').Groups[1].Value
-          $runtime = [regex]::Match((Get-Content -Raw src/agentbetta/__init__.py), '(?m)^__version__ = "([^"]+)"$').Groups[1].Value
-          $build = [regex]::Match((Get-Content -Raw scripts/build_windows.ps1), '(?m)^\$version = "([^"]+)"$').Groups[1].Value
-          $installer = [regex]::Match((Get-Content -Raw packaging/agentbetta.iss), '(?m)^#define MyAppVersion "([^"]+)"$').Groups[1].Value
+          $pyproject = [regex]::Match((Get-Content -Raw pyproject.toml), '(?m)^version = "([^"]+)"\r?$').Groups[1].Value
+          $runtime = [regex]::Match((Get-Content -Raw src/agentbetta/__init__.py), '(?m)^__version__ = "([^"]+)"\r?$').Groups[1].Value
+          $build = [regex]::Match((Get-Content -Raw scripts/build_windows.ps1), '(?m)^\$version = "([^"]+)"\r?$').Groups[1].Value
+          $installer = [regex]::Match((Get-Content -Raw packaging/agentbetta.iss), '(?m)^#define MyAppVersion "([^"]+)"\r?$').Groups[1].Value
           if ($pyproject -ne $pepExpected -or $runtime -ne $pepExpected -or $build -ne $expected -or $installer -ne $expected) {
             throw "Version mismatch: tag=$expected pyproject=$pyproject runtime=$runtime build=$build installer=$installer"
           }
